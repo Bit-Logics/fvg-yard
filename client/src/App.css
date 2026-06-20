@@ -6,12 +6,12 @@
 }
 
 [data-theme="light"] {
-  --bg-color: #e2e8f0;
-  --text-color: #0f172a;
-  --primary-color: #3b82f6;
-  --accent-color: #10b981;
-  --panel-bg: rgba(248, 250, 252, 0.75);
-  --panel-border: rgba(255, 255, 255, 0.4);
+  --bg-color: #f7f5f0;
+  --text-color: #12151f;
+  --primary-color: #b8791a;
+  --accent-color: #a06815;
+  --panel-bg: rgba(253, 248, 241, 0.9);
+  --panel-border: rgba(28, 31, 46, 0.1);
 }
 
 .theme-toggle {

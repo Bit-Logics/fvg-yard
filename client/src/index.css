@@ -1,24 +1,25 @@
 :root {
-  --bg-color: #f8fafc;
-  --panel-bg: rgba(255, 255, 255, 0.7);
-  --panel-border: rgba(255, 255, 255, 0.4);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --bg-color: #f7f5f0;
+  --panel-bg: rgba(253, 248, 241, 0.9);
+  --panel-border: rgba(28, 31, 46, 0.1);
+  --text-primary: #12151f;
+  --text-secondary: #5a5f70;
   
-  --primary-color: #3b82f6;
-  --accent-color: #8b5cf6;
+  --primary-color: #b8791a;
+  --primary-hover: #a06815;
+  --accent-color: #b8791a;
   --danger-color: #ef4444;
   
-  --ticket-car: #eab308;
-  --ticket-train: #3b82f6;
-  --ticket-plane: #ef4444;
-  --ticket-black: #1e293b;
+  --ticket-car: #facc15;
+  --ticket-train: #ef4444;
+  --ticket-plane: #a855f7;
+  --ticket-black: #12151f;
   
-  --node-color: #fff;
-  --node-border: #333;
-  --route-car: #eab308;
-  --route-train: #3b82f6;
-  --route-plane: #ef4444;
+  --node-color: #f7f5f0;
+  --node-border: #12151f;
+  --route-car: #facc15;
+  --route-train: #ef4444;
+  --route-plane: #a855f7;
   
   --map-bg-brightness: 1;
 }
@@ -64,19 +65,20 @@ body {
 }
 
 .btn {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background-color: var(--primary-color);
   color: white;
-  border: none;
+  border: 1px solid var(--primary-hover);
   padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn:hover {
+  background-color: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.4);
+  box-shadow: 0 4px 12px rgba(184, 121, 26, 0.2);
 }
 
 .btn:active {

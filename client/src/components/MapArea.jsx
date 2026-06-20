@@ -245,7 +245,8 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
         </Source>
 
         {/* Draw Nodes */}
-        {mapData.nodes.map(node => {
+        {mapData.nodes.map((node, index) => {
+          const nodeNum = index + 1;
           const isReachable = isMyTurn && myPlayer && mapData.links.some(l => 
             ((l.source === myPlayer.location && l.target === node.id) || 
              (l.source === node.id && l.target === myPlayer.location)) && 
@@ -305,7 +306,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
                   textShadow: '2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff',
                   pointerEvents: 'none'
                 }}>
-                  {node.id}
+                  {nodeNum}. {node.id}
                 </div>
               </div>
             </Marker>

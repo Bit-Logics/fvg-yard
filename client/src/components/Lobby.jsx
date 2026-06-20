@@ -153,7 +153,7 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw }) {
               {!me.hasDrawn ? (
                 <button 
                   className="btn" 
-                  style={{ backgroundColor: '#f59e0b', width: '100%' }}
+                  style={{ width: '100%' }}
                   onClick={onDraw}
                 >
                   Pesca Biglietto di Partenza

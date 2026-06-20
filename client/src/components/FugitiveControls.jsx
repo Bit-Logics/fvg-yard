@@ -8,7 +8,8 @@ function FugitiveControls({ onMove, mapData, specialTickets }) {
 
   // Autocomplete matching
   const matchingNodes = mapData.nodes
-    .filter(n => n.id.toLowerCase().includes(inputValue.toLowerCase()))
+    .map((n, i) => ({ ...n, num: i + 1 }))
+    .filter(n => n.id.toLowerCase().includes(inputValue.toLowerCase()) || n.num.toString() === inputValue)
     .slice(0, 5);
 
   const handleMove = (nodeId) => {
@@ -80,7 +81,7 @@ function FugitiveControls({ onMove, mapData, specialTickets }) {
       <div style={{ position: 'relative' }}>
         <input 
           type="text" 
-          placeholder="Digita il paese (es. Udine)..." 
+          placeholder="Digita il paese o numero..." 
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', boxSizing: 'border-box' }}
@@ -96,7 +97,7 @@ function FugitiveControls({ onMove, mapData, specialTickets }) {
                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
-                Vai a <strong>{n.id}</strong>
+                Vai a <strong>{n.num}. {n.id}</strong>
               </li>
             )) : <li style={{ padding: '10px', color: '#999' }}>Nessun paese trovato</li>}
           </ul>
