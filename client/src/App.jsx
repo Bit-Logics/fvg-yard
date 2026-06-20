@@ -208,6 +208,7 @@ function App() {
             onMove={handleMove}
             isDouble={isDouble}
             isSecret={isSecret}
+            theme={theme}
           />
           <GameUI 
             myPlayer={myPlayer} 

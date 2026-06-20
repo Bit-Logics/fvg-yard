@@ -51,7 +51,7 @@ const OSM_STYLE = {
   ]
 };
 
-function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) {
+function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove, theme }) {
   const [selectedTransport, setSelectedTransport] = useState('car');
   const [showAllTrajectories, setShowAllTrajectories] = useState(false);
   const [viewState, setViewState] = useState({
