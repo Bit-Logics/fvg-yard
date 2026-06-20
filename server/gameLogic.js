@@ -30,6 +30,7 @@ function init(socketIo) {
   
   io.on('connection', (socket) => {
     socket.playerId = socket.handshake.auth.sessionId || socket.id;
+    socket.join(socket.playerId);
     console.log('Player connected:', socket.playerId);
     
     // Auto-assign to best lobby
