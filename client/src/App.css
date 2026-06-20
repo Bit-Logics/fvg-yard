@@ -10,8 +10,8 @@
   --text-color: #12151f;
   --primary-color: #b8791a;
   --accent-color: #a06815;
-  --panel-bg: rgba(253, 248, 241, 0.9);
-  --panel-border: rgba(28, 31, 46, 0.1);
+  --panel-bg: rgba(255, 255, 255, 0.95);
+  --panel-border: #b8791a;
 }
 
 .theme-toggle {

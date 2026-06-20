@@ -1,7 +1,7 @@
 :root {
-  --bg-color: #f7f5f0;
-  --panel-bg: rgba(253, 248, 241, 0.9);
-  --panel-border: rgba(28, 31, 46, 0.1);
+  --bg-color: #f7f5f0; /* Avorio */
+  --panel-bg: rgba(255, 255, 255, 0.95); /* Bianco puro per staccare dal fondo avorio/mappa */
+  --panel-border: #b8791a; /* Bordo Ocra per forte contrasto e stile */
   --text-primary: #12151f;
   --text-secondary: #5a5f70;
   
