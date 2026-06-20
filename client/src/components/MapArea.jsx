@@ -285,7 +285,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove, th
         style={{ width: '100%', height: '100%' }}
         maxPitch={60}
         maxBounds={selectedMap === 'italy' ? ITALY_BOUNDS : (selectedMap === 'porpetto' ? PORPETTO_BOUNDS : FVG_BOUNDS)}
-        minZoom={selectedMap === 'italy' ? 2 : (selectedMap === 'porpetto' ? 14 : 5)}
+        minZoom={2}
       >
         {/* Mask Layer */}
         {selectedMap === 'italy' && (
