@@ -5,7 +5,7 @@ import MapArea from './components/MapArea';
 import GameUI from './components/GameUI';
 import FugitiveLog from './components/FugitiveLog';
 import FugitiveControls from './components/FugitiveControls';
-import { Sun, Moon, TreePine } from 'lucide-react';
+import { Sun, Moon, TreePine, Flag } from 'lucide-react';
 import SoundEngine from './utils/SoundEngine';
 import './App.css';
 
@@ -28,8 +28,9 @@ function App() {
   const [maps, setMaps] = useState({ friuli: null, italy: null, porpetto: null });
   const [selectedMap, setSelectedMap] = useState('friuli');
   const [lobbies, setLobbies] = useState([]);
-  const [currentLobbyId, setCurrentLobbyId] = useState('lobby1');
+  const [currentLobbyId, setCurrentLobbyId] = useState(null);
   const [votes, setVotes] = useState({});
+  const [endGameVotes, setEndGameVotes] = useState({});
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -71,6 +72,7 @@ function App() {
       if (state.lobbyId) setCurrentLobbyId(state.lobbyId);
       if (state.selectedMap) setSelectedMap(state.selectedMap);
       if (state.votes) setVotes(state.votes);
+      if (state.endGameVotes) setEndGameVotes(state.endGameVotes);
     });
 
     socket.on('lobbiesMeta', (meta) => {
@@ -137,9 +139,30 @@ function App() {
 
   return (
     <div className="app-container">
-      <button className="theme-toggle" onClick={toggleTheme}>
-        {theme === 'light' ? <Sun size={20} /> : theme === 'dark' ? <Moon size={20} /> : <TreePine size={20} />}
-      </button>
+      <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 1000, display: 'flex', gap: '10px' }}>
+        {gameState === 'playing' && (
+          <button 
+            className="theme-toggle" 
+            onClick={() => socket.emit('voteEndGame')}
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: '5px', 
+              backgroundColor: endGameVotes[socket.id] ? 'var(--danger-color)' : 'var(--panel-bg)',
+              color: endGameVotes[socket.id] ? 'white' : 'var(--text-primary)'
+            }}
+            title="Vota per terminare la partita in anticipo"
+          >
+            <Flag size={20} />
+            {Object.keys(endGameVotes).length > 0 && (
+              <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                {Object.keys(endGameVotes).length}/{Object.keys(players).length}
+              </span>
+            )}
+          </button>
+        )}
+        <button className="theme-toggle" onClick={toggleTheme}>
+          {theme === 'light' ? <Sun size={20} /> : theme === 'dark' ? <Moon size={20} /> : <TreePine size={20} />}
+        </button>
+      </div>
 
       {errorMsg && (
         <div className="error-toast glass-panel">
@@ -186,6 +209,7 @@ function App() {
             <FugitiveLog 
               history={fugitivePlayer.history} 
               isFugitive={myPlayer?.role === 'fugitive'} 
+              selectedMap={selectedMap}
             />
           )}
 

@@ -20,28 +20,39 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap }) {
 
   return (
     <div className="game-ui-overlay">
-      <div className="top-bar glass-panel">
-        <div className="turn-info">
-          {isMyTurn ? (
-            <span className="my-turn">È il tuo turno!</span>
-          ) : (
-            <span>Turno di: <strong>{currentPlayer?.name}</strong></span>
-          )}
+      <div className="top-bar glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px', width: '100%' }}>
+        
+        {/* Left: Player Name */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: myPlayer.color !== '#111' ? myPlayer.color : 'var(--text-primary)' }} />
+          <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: myPlayer.color !== '#111' ? myPlayer.color : 'var(--text-primary)' }}>
+            {myPlayer.name} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{myPlayer.role === 'fugitive' ? '(Mister X)' : '(Detective)'}</span>
+          </div>
         </div>
-        <div className={`timer ${timeLeft <= 10 ? 'danger' : ''}`}>
-          {timeLeft}s
+
+        {/* Center: Turn Info & Timer */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px' }}>
+          <div className="turn-info">
+            {isMyTurn ? (
+              <span className="my-turn">È il tuo turno!</span>
+            ) : (
+              <span>Turno di: <strong>{currentPlayer?.name}</strong></span>
+            )}
+          </div>
+          <div className={`timer ${timeLeft <= 10 ? 'danger' : ''}`}>
+            {timeLeft}s
+          </div>
         </div>
+
+        {/* Right: Position */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>POSIZIONE:</div>
+          <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{myPlayer.location || 'Nascosta'}</div>
+        </div>
+
       </div>
 
       <div className="side-panel glass-panel">
-        <div className="player-info" style={{ marginBottom: '15px', paddingBottom: '10px', borderBottom: '1px solid var(--panel-border)' }}>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>GIOCATORE</div>
-          <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: myPlayer.color !== '#111' ? myPlayer.color : 'var(--text-primary)' }}>
-            {myPlayer.name} {myPlayer.role === 'fugitive' && '(Mister X)'}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '8px' }}>POSIZIONE</div>
-          <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>{myPlayer.location || 'Nascosta'}</div>
-        </div>
 
         <h3>I tuoi Biglietti</h3>
         <ul className="tickets-list">

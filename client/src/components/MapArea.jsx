@@ -179,7 +179,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           onClick={() => { SoundEngine.playClick(); setSelectedTransport('car'); }}
           style={{
             background: selectedTransport === 'car' ? getTransportColor('car') : 'transparent',
-            color: selectedTransport === 'car' ? 'white' : '#334155',
+            color: selectedTransport === 'car' ? 'white' : 'var(--text-primary)',
             border: `2px solid ${getTransportColor('car')}`,
             padding: '6px 12px',
             borderRadius: '8px',
@@ -197,7 +197,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           onClick={() => { SoundEngine.playClick(); setSelectedTransport('train'); }}
           style={{
             background: selectedTransport === 'train' ? getTransportColor('train') : 'transparent',
-            color: selectedTransport === 'train' ? 'white' : '#334155',
+            color: selectedTransport === 'train' ? 'white' : 'var(--text-primary)',
             border: `2px solid ${getTransportColor('train')}`,
             padding: '6px 12px',
             borderRadius: '8px',
@@ -215,7 +215,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           onClick={() => { SoundEngine.playClick(); setSelectedTransport('plane'); }}
           style={{
             background: selectedTransport === 'plane' ? getTransportColor('plane') : 'transparent',
-            color: selectedTransport === 'plane' ? 'white' : '#334155',
+            color: selectedTransport === 'plane' ? 'white' : 'var(--text-primary)',
             border: `2px solid ${getTransportColor('plane')}`,
             padding: '6px 12px',
             borderRadius: '8px',

@@ -194,11 +194,31 @@ function init(socketIo) {
       const detectives = playerList.filter(p => p.role === 'detective');
       lobby.turnOrder = [fugitive.id, ...detectives.map(d => d.id)];
       lobby.currentTurnIndex = 0;
+      lobby.endGameVotes = {};
       lobby.gameState = 'playing';
       
       startTurnTimer(socket.lobbyId);
       broadcastState(socket.lobbyId);
       broadcastLobbiesMeta();
+    });
+
+    socket.on('voteEndGame', () => {
+      const lobby = LOBBIES[socket.lobbyId];
+      if (!lobby || lobby.gameState !== 'playing' || !lobby.players[socket.id]) return;
+      
+      if (!lobby.endGameVotes) lobby.endGameVotes = {};
+      lobby.endGameVotes[socket.id] = true;
+      
+      const voteCount = Object.keys(lobby.endGameVotes).length;
+      const totalPlayers = Object.keys(lobby.players).length;
+      
+      if (voteCount >= totalPlayers && totalPlayers > 0) {
+        lobby.gameState = 'finished';
+        io.to(socket.lobbyId).emit('gameOver', { winner: 'none', reason: 'Partita terminata tramite votazione unanime.' });
+        stopTimer(socket.lobbyId);
+        broadcastLobbiesMeta();
+      }
+      broadcastState(socket.lobbyId);
     });
     
     socket.on('move', (data) => {
@@ -431,7 +451,8 @@ function getPublicState(requestingSocketId, lobbyId) {
     timeLeft: lobby.timeLeft,
     lobbyId: lobby.id,
     votes: lobby.votes,
-    selectedMap: lobby.selectedMap
+    selectedMap: lobby.selectedMap,
+    endGameVotes: lobby.endGameVotes || {}
   };
 }
 

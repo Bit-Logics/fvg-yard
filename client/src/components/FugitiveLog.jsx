@@ -2,7 +2,7 @@ import React from 'react';
 
 const REVEAL_TURNS = [3, 8, 13, 18, 24];
 
-function FugitiveLog({ history = [], isFugitive }) {
+function FugitiveLog({ history = [], isFugitive, selectedMap }) {
   // We need 24 rows
   const rows = Array.from({ length: 24 }).map((_, i) => {
     const turn = i + 1;
@@ -16,10 +16,17 @@ function FugitiveLog({ history = [], isFugitive }) {
     };
   });
 
+  const isPorpetto = selectedMap === 'porpetto';
   const getEmoji = (type) => {
-    if (type === 'car') return '🚗';
-    if (type === 'train') return '🚂';
-    if (type === 'plane') return '✈️';
+    if (isPorpetto) {
+      if (type === 'car') return '🚶'; // Piedi
+      if (type === 'train') return '🚲'; // Bici
+      if (type === 'plane') return '🛵'; // Motorino
+    } else {
+      if (type === 'car') return '🚗';
+      if (type === 'train') return '🚂';
+      if (type === 'plane') return '✈️';
+    }
     if (type === 'secret') return '⬛';
     return '';
   };
@@ -38,7 +45,7 @@ function FugitiveLog({ history = [], isFugitive }) {
       gap: '8px',
       overflowY: 'auto'
     }}>
-      <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#1e293b', textAlign: 'center' }}>
+      <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: 'var(--text-primary)', textAlign: 'center' }}>
         Registro Mister X
       </h3>
       
@@ -46,24 +53,24 @@ function FugitiveLog({ history = [], isFugitive }) {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
           <thead>
             <tr>
-              <th style={{ padding: '4px', borderBottom: '2px solid #ccc', textAlign: 'left' }}>#</th>
-              <th style={{ padding: '4px', borderBottom: '2px solid #ccc', textAlign: 'center' }}>Mezzo</th>
-              <th style={{ padding: '4px', borderBottom: '2px solid #ccc', textAlign: 'right' }}>Luogo</th>
+              <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'left', color: 'var(--text-primary)' }}>#</th>
+              <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'center', color: 'var(--text-primary)' }}>Mezzo</th>
+              <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'right', color: 'var(--text-primary)' }}>Luogo</th>
             </tr>
           </thead>
           <tbody>
             {rows.map(row => (
               <tr key={row.turn} style={{ 
-                backgroundColor: row.isReveal ? '#fef3c7' : 'transparent',
-                borderBottom: '1px solid #eee'
+                backgroundColor: row.isReveal ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
+                borderBottom: '1px solid var(--border-light)'
               }}>
-                <td style={{ padding: '4px 2px', fontWeight: row.isReveal ? 'bold' : 'normal', color: '#64748b' }}>
+                <td style={{ padding: '4px 2px', fontWeight: row.isReveal ? 'bold' : 'normal', color: 'var(--text-secondary)' }}>
                   {row.turn}
                 </td>
                 <td style={{ padding: '4px 2px', textAlign: 'center', fontSize: '16px' }}>
                   {row.move ? getEmoji(row.move.displayType) : <span style={{ opacity: 0.2 }}>-</span>}
                 </td>
-                <td style={{ padding: '4px 2px', textAlign: 'right', fontWeight: 'bold', color: row.isReveal ? '#b45309' : '#334155' }}>
+                <td style={{ padding: '4px 2px', textAlign: 'right', fontWeight: 'bold', color: row.isReveal ? '#f59e0b' : 'var(--text-primary)' }}>
                   {row.move && (isFugitive || row.move.to) ? row.move.to : (row.isReveal ? '?' : '---')}
                 </td>
               </tr>
