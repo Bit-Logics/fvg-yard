@@ -130,9 +130,12 @@ function init(socketIo) {
       if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
       if (lobby.players[socket.id].hasDrawn) return;
       
-      // Location is not drawn yet, because map is not decided!
-      // We will assign locations dynamically when game starts.
       lobby.players[socket.id].hasDrawn = true;
+      lobby.players[socket.id].startingLocations = {
+        friuli: getRandomLocationForMap('friuli', lobby),
+        italy: getRandomLocationForMap('italy', lobby),
+        porpetto: getRandomLocationForMap('porpetto', lobby)
+      };
       broadcastState(socket.lobbyId);
     });
     
@@ -173,7 +176,7 @@ function init(socketIo) {
       
       // Assign starting locations now that map is decided
       playerList.forEach(p => {
-        p.location = getRandomLocation(lobby);
+        p.location = p.startingLocations ? p.startingLocations[winner] : getRandomLocationForMap(winner, lobby);
       });
       
       playerList.forEach(p => {
@@ -292,14 +295,19 @@ function init(socketIo) {
   });
 }
 
-function getRandomLocation(lobby) {
-  const mapData = MAPS[lobby.selectedMap];
+function getRandomLocationForMap(mapId, lobby) {
+  const mapData = MAPS[mapId];
+  if (!mapData || !mapData.nodes) return "Sconosciuto";
   const nodes = mapData.nodes;
   let loc;
   do {
     loc = nodes[Math.floor(Math.random() * nodes.length)].id;
-  } while (Object.values(lobby.players).some(p => p.location === loc));
+  } while (Object.values(lobby.players).some(p => p.startingLocations && p.startingLocations[mapId] === loc));
   return loc;
+}
+
+function getRandomLocation(lobby) {
+  return getRandomLocationForMap(lobby.selectedMap, lobby);
 }
 
 function isValidMove(fromId, toId, transportType, playerId, lobby) {

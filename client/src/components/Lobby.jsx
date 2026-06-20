@@ -48,6 +48,25 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
   const playersList = Object.values(players);
   const takenColors = playersList.map(p => p.color);
 
+  const getWinningMap = () => {
+    let votesCount = { friuli: 0, italy: 0, porpetto: 0 };
+    Object.values(votes || {}).forEach(v => {
+      if (v === 'italy' || v === 'porpetto') votesCount[v]++;
+      else votesCount.friuli++;
+    });
+    // Count players that haven't voted as voting 'friuli'
+    const totalVoted = Object.keys(votes || {}).length;
+    votesCount.friuli += (playersList.length - totalVoted);
+    
+    let winner = 'friuli';
+    let max = votesCount.friuli;
+    if (votesCount.italy > max) { winner = 'italy'; max = votesCount.italy; }
+    if (votesCount.porpetto > max) { winner = 'porpetto'; max = votesCount.porpetto; }
+    return winner;
+  };
+
+  const winningMap = getWinningMap();
+
   return (
     <div className="lobby-container">
       <div className="lobby-panel glass-panel" style={{ minWidth: '400px', display: 'flex', flexDirection: 'column' }}>
@@ -253,7 +272,7 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
                         fontSize: '12px',
                         fontWeight: 'bold'
                       }}>
-                        🎫 {p.role === 'fugitive' && p.id !== myId ? '???' : p.location}
+                        🎫 {p.role === 'fugitive' && p.id !== myId ? '???' : (p.startingLocations ? p.startingLocations[winningMap] : 'Pronto')}
                       </div>
                     ) : (
                       <span style={{ fontSize: '12px', color: '#94a3b8' }}>In attesa di pescare...</span>
