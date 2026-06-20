@@ -25,7 +25,7 @@ const PawnSVG = ({ color, isFugitive }) => (
   </svg>
 );
 
-function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProgress, lobbies, currentLobbyId, onSwitchLobby }) {
+function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProgress, lobbies, currentLobbyId, onSwitchLobby, votes, onVoteMap }) {
   const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState('#3b82f6');
   const me = players[myId];
