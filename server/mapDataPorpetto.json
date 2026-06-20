@@ -131,6 +131,36 @@
       "lng": 13.2155
     },
     {
+      "id": "Via Provinciale",
+      "lat": 45.85,
+      "lng": 13.205
+    },
+    {
+      "id": "Bivio Corgnolo",
+      "lat": 45.847,
+      "lng": 13.195
+    },
+    {
+      "id": "Via Udine",
+      "lat": 45.862,
+      "lng": 13.2195
+    },
+    {
+      "id": "Bivio Castello",
+      "lat": 45.8605,
+      "lng": 13.2185
+    },
+    {
+      "id": "Campi Est",
+      "lat": 45.852,
+      "lng": 13.225
+    },
+    {
+      "id": "Via Pampaluna",
+      "lat": 45.8505,
+      "lng": 13.228
+    },
+    {
       "id": "Piazza di Corgnolo",
       "lat": 45.845,
       "lng": 13.185
@@ -365,6 +395,66 @@
       "geometry": []
     },
     {
+      "source": "Cimitero",
+      "target": "Via Provinciale",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Fiume Corno",
+      "target": "Via Provinciale",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Via Provinciale",
+      "target": "Bivio Corgnolo",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Bivio Corgnolo",
+      "target": "Piazza di Corgnolo",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Supermercato",
+      "target": "Via Udine",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Via Udine",
+      "target": "Bivio Castello",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Bivio Castello",
+      "target": "Borgo Castello",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Cimitero",
+      "target": "Campi Est",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Campi Est",
+      "target": "Via Pampaluna",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Via Pampaluna",
+      "target": "Borgo Pampaluna",
+      "type": "car",
+      "geometry": []
+    },
+    {
       "source": "Piazza",
       "target": "Campo Sportivo",
       "type": "train",
@@ -407,18 +497,6 @@
       "geometry": []
     },
     {
-      "source": "Cimitero",
-      "target": "Piazza di Corgnolo",
-      "type": "train",
-      "geometry": []
-    },
-    {
-      "source": "Fiume Corno",
-      "target": "Piazza di Corgnolo",
-      "type": "train",
-      "geometry": []
-    },
-    {
       "source": "Fiume Corno",
       "target": "Ristorante",
       "type": "train",
@@ -443,14 +521,44 @@
       "geometry": []
     },
     {
-      "source": "Palude Fraghis",
+      "source": "Borgo Pampaluna",
+      "target": "Borgo Castello",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Fiume Corno",
+      "target": "Via Provinciale",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Via Provinciale",
+      "target": "Piazza di Corgnolo",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Cimitero",
+      "target": "Campi Est",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Campi Est",
       "target": "Borgo Pampaluna",
       "type": "train",
       "geometry": []
     },
     {
-      "source": "Borgo Pampaluna",
-      "target": "Borgo Castello",
+      "source": "Supermercato",
+      "target": "Bivio Castello",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Bivio Castello",
+      "target": "Castello di Porpetto",
       "type": "train",
       "geometry": []
     },
@@ -500,19 +608,70 @@
       "source": "Municipio",
       "target": "Borgo Pampaluna",
       "type": "plane",
-      "geometry": []
+      "geometry": [
+        [
+          13.213,
+          45.859
+        ],
+        [
+          13.22,
+          45.858
+        ],
+        [
+          13.226,
+          45.855
+        ],
+        [
+          13.23,
+          45.85
+        ]
+      ]
     },
     {
       "source": "Municipio",
       "target": "Piazza di Corgnolo",
       "type": "plane",
-      "geometry": []
+      "geometry": [
+        [
+          13.213,
+          45.859
+        ],
+        [
+          13.21,
+          45.854
+        ],
+        [
+          13.2,
+          45.848
+        ],
+        [
+          13.185,
+          45.845
+        ]
+      ]
     },
     {
       "source": "Piazza di Corgnolo",
       "target": "Zona Industriale",
       "type": "plane",
-      "geometry": []
+      "geometry": [
+        [
+          13.185,
+          45.845
+        ],
+        [
+          13.19,
+          45.855
+        ],
+        [
+          13.195,
+          45.865
+        ],
+        [
+          13.205,
+          45.87
+        ]
+      ]
     }
   ]
 }

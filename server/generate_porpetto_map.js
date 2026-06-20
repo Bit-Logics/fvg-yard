@@ -31,6 +31,14 @@ const nodes = [
   { id: 'Gelateria', lat: 45.8593, lng: 13.2115 },
   { id: 'Asilo', lat: 45.8580, lng: 13.2155 },
   
+  // Nodi Intermedi (Per collegare le frazioni)
+  { id: 'Via Provinciale', lat: 45.8500, lng: 13.2050 },
+  { id: 'Bivio Corgnolo', lat: 45.8470, lng: 13.1950 },
+  { id: 'Via Udine', lat: 45.8620, lng: 13.2195 },
+  { id: 'Bivio Castello', lat: 45.8605, lng: 13.2185 },
+  { id: 'Campi Est', lat: 45.8520, lng: 13.2250 },
+  { id: 'Via Pampaluna', lat: 45.8505, lng: 13.2280 },
+  
   // Frazione Corgnolo
   { id: 'Piazza di Corgnolo', lat: 45.8450, lng: 13.1850 },
   { id: 'Chiesa di Corgnolo', lat: 45.8455, lng: 13.1845 },
@@ -82,6 +90,18 @@ const links = [
   { source: 'Borgo Pampaluna', target: 'Villa Pampaluna', type: 'car', geometry: [] },
   { source: 'Castello di Porpetto', target: 'Borgo Castello', type: 'car', geometry: [] },
   { source: 'Castello di Porpetto', target: 'Torre', type: 'car', geometry: [] },
+
+  // Piedi (car) - Collegamenti Nodi Intermedi
+  { source: 'Cimitero', target: 'Via Provinciale', type: 'car', geometry: [] },
+  { source: 'Fiume Corno', target: 'Via Provinciale', type: 'car', geometry: [] },
+  { source: 'Via Provinciale', target: 'Bivio Corgnolo', type: 'car', geometry: [] },
+  { source: 'Bivio Corgnolo', target: 'Piazza di Corgnolo', type: 'car', geometry: [] },
+  { source: 'Supermercato', target: 'Via Udine', type: 'car', geometry: [] },
+  { source: 'Via Udine', target: 'Bivio Castello', type: 'car', geometry: [] },
+  { source: 'Bivio Castello', target: 'Borgo Castello', type: 'car', geometry: [] },
+  { source: 'Cimitero', target: 'Campi Est', type: 'car', geometry: [] },
+  { source: 'Campi Est', target: 'Via Pampaluna', type: 'car', geometry: [] },
+  { source: 'Via Pampaluna', target: 'Borgo Pampaluna', type: 'car', geometry: [] },
   
   // Bici (train) - distanze medie (Collega centro a frazioni e tra loro)
   { source: 'Piazza', target: 'Campo Sportivo', type: 'train', geometry: [] },
@@ -91,26 +111,42 @@ const links = [
   { source: 'Supermercato', target: 'Zona Industriale', type: 'train', geometry: [] },
   { source: 'Parco Pubblico', target: 'Castello di Porpetto', type: 'train', geometry: [] },
   { source: 'Cimitero', target: 'Palude Fraghis', type: 'train', geometry: [] },
-  { source: 'Cimitero', target: 'Piazza di Corgnolo', type: 'train', geometry: [] },
-  { source: 'Fiume Corno', target: 'Piazza di Corgnolo', type: 'train', geometry: [] },
   { source: 'Fiume Corno', target: 'Ristorante', type: 'train', geometry: [] },
   { source: 'Municipio', target: 'Supermercato', type: 'train', geometry: [] },
   { source: 'Asilo', target: 'Supermercato', type: 'train', geometry: [] },
   { source: 'Campo Sportivo', target: 'Palude Fraghis', type: 'train', geometry: [] },
-  { source: 'Palude Fraghis', target: 'Borgo Pampaluna', type: 'train', geometry: [] },
   { source: 'Borgo Pampaluna', target: 'Borgo Castello', type: 'train', geometry: [] },
+  
+  // Bici (train) - Percorsi tramite nodi per tappe medie
+  { source: 'Fiume Corno', target: 'Via Provinciale', type: 'train', geometry: [] },
+  { source: 'Via Provinciale', target: 'Piazza di Corgnolo', type: 'train', geometry: [] },
+  { source: 'Cimitero', target: 'Campi Est', type: 'train', geometry: [] },
+  { source: 'Campi Est', target: 'Borgo Pampaluna', type: 'train', geometry: [] },
+  { source: 'Supermercato', target: 'Bivio Castello', type: 'train', geometry: [] },
+  { source: 'Bivio Castello', target: 'Castello di Porpetto', type: 'train', geometry: [] },
   { source: 'Chiesa di Corgnolo', target: 'Palude Fraghis', type: 'train', geometry: [] },
 
-  // Motorino (plane) - distanze lunghe (Niente palude o campi)
+  // Motorino (plane) - distanze lunghe (Niente palude o campi) - Aggiunta Geometry curva simulata
   { source: 'Bar Centrale', target: 'Stazione FS', type: 'plane', geometry: [] },
   { source: 'Stazione FS', target: 'Zona Industriale', type: 'plane', geometry: [] },
   { source: 'Zona Industriale', target: 'Castello di Porpetto', type: 'plane', geometry: [] },
   { source: 'Pala', target: 'Castello di Porpetto', type: 'plane', geometry: [] },
   { source: 'Pala', target: 'Zona Industriale', type: 'plane', geometry: [] },
   { source: 'Municipio', target: 'Stazione FS', type: 'plane', geometry: [] },
-  { source: 'Municipio', target: 'Borgo Pampaluna', type: 'plane', geometry: [] },
-  { source: 'Municipio', target: 'Piazza di Corgnolo', type: 'plane', geometry: [] },
-  { source: 'Piazza di Corgnolo', target: 'Zona Industriale', type: 'plane', geometry: [] }
+  
+  // Tratte motorino lunghe e curve
+  { 
+    source: 'Municipio', target: 'Borgo Pampaluna', type: 'plane', 
+    geometry: [[13.2130, 45.8590], [13.2200, 45.8580], [13.2260, 45.8550], [13.2300, 45.8500]]
+  },
+  { 
+    source: 'Municipio', target: 'Piazza di Corgnolo', type: 'plane', 
+    geometry: [[13.2130, 45.8590], [13.2100, 45.8540], [13.2000, 45.8480], [13.1850, 45.8450]]
+  },
+  { 
+    source: 'Piazza di Corgnolo', target: 'Zona Industriale', type: 'plane', 
+    geometry: [[13.1850, 45.8450], [13.1900, 45.8550], [13.1950, 45.8650], [13.2050, 45.8700]]
+  }
 ];
 
 const mapData = { nodes, links };
