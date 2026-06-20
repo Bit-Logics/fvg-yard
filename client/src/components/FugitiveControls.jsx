@@ -21,9 +21,9 @@ function FugitiveControls({ onMove, mapData, specialTickets }) {
 
   const getTransportColor = (type) => {
     switch(type) {
-      case 'car': return '#0ea5e9'; 
-      case 'train': return '#f59e0b'; 
-      case 'plane': return '#ef4444'; 
+      case 'car': return '#facc15'; 
+      case 'train': return '#ef4444'; 
+      case 'plane': return '#a855f7'; 
       default: return '#fff';
     }
   };

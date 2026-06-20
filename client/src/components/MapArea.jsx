@@ -8,7 +8,6 @@ const FVG_BOUNDS = [
   [14.2, 46.7]  // Northeast coordinates
 ];
 
-// Pawn SVG component
 const PawnSVG = ({ color, isFugitive }) => (
   <svg width="40" height="50" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 8px 8px rgba(0,0,0,0.4))' }}>
     <ellipse cx="50" cy="112" rx="40" ry="6" fill="rgba(0,0,0,0.6)" />
@@ -17,8 +16,6 @@ const PawnSVG = ({ color, isFugitive }) => (
       <rect x="30" y="45" width="40" height="8" rx="4" />
       <path d="M 40 50 C 40 80, 20 100, 15 105 C 15 110, 20 110, 50 110 C 80 110, 85 110, 85 105 C 80 100, 60 80, 60 50 Z" />
     </g>
-    <path d="M 40 13 A 12 12 0 0 1 50 7" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" opacity="0.6" />
-    <path d="M 32 60 C 27 80, 25 95, 25 100" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.4" />
   </svg>
 );
 
@@ -69,9 +66,9 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
 
   const getTransportColor = (type) => {
     switch(type) {
-      case 'car': return '#0ea5e9'; 
-      case 'train': return '#f59e0b'; 
-      case 'plane': return '#ef4444'; 
+      case 'car': return '#facc15';
+      case 'train': return '#ef4444';
+      case 'plane': return '#a855f7';
       default: return '#fff';
     }
   };
@@ -255,6 +252,20 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             l.type === selectedTransport
           );
 
+          const types = [];
+          if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'car')) types.push('car');
+          if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'train')) types.push('train');
+          if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'plane')) types.push('plane');
+
+          let backgroundStyle = 'white';
+          if (types.length === 1) {
+             backgroundStyle = getTransportColor(types[0]);
+          } else if (types.length === 2) {
+             backgroundStyle = `conic-gradient(${getTransportColor(types[0])} 0% 50%, ${getTransportColor(types[1])} 50% 100%)`;
+          } else if (types.length === 3) {
+             backgroundStyle = `conic-gradient(${getTransportColor(types[0])} 0% 33.33%, ${getTransportColor(types[1])} 33.33% 66.66%, ${getTransportColor(types[2])} 66.66% 100%)`;
+          }
+
           return (
             <Marker 
               key={`node-${node.id}`} 
@@ -273,17 +284,18 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  transform: isReachable ? 'scale(1.2)' : 'scale(1)',
-                  transition: 'transform 0.2s'
+                  transform: isReachable ? 'scale(1.3)' : 'scale(1)',
+                  transition: 'transform 0.2s',
+                  zIndex: isReachable ? 10 : 1
                 }}
               >
                 <div style={{
-                  width: isReachable ? 24 : 16,
-                  height: isReachable ? 24 : 16,
-                  backgroundColor: 'white',
-                  border: `3px solid ${isReachable ? getTransportColor(selectedTransport) : '#334155'}`,
+                  width: isReachable ? 28 : 20,
+                  height: isReachable ? 28 : 20,
+                  background: backgroundStyle,
+                  border: `3px solid ${isReachable ? 'white' : '#1e293b'}`,
                   borderRadius: '50%',
-                  boxShadow: isReachable ? `0 0 10px ${getTransportColor(selectedTransport)}` : '0 2px 4px rgba(0,0,0,0.3)'
+                  boxShadow: isReachable ? `0 0 15px ${getTransportColor(selectedTransport)}` : '0 2px 4px rgba(0,0,0,0.5)'
                 }}></div>
                 <div style={{
                   marginTop: 4,

@@ -44,8 +44,9 @@ function init(socketIo) {
         id: socket.id,
         name: playerName || `Player ${Object.keys(players).length + 1}`,
         color: playerColor,
-        role: 'detective', // Everyone starts as detective, must manually claim fugitive
-        location: getRandomLocation(),
+        role: 'detective', 
+        location: null, // location is assigned when drawing card
+        hasDrawn: false,
         tickets: { ...STARTING_TICKETS },
         specialTickets: { double: 0, secret: 0 },
         isReady: false,
@@ -57,13 +58,21 @@ function init(socketIo) {
     
     socket.on('setRole', (role) => {
       if (gameState !== 'lobby' || !players[socket.id]) return;
-      // If someone wants to be fugitive, swap with current
       if (role === 'fugitive') {
         Object.values(players).forEach(p => {
           if (p.role === 'fugitive') p.role = 'detective';
         });
         players[socket.id].role = 'fugitive';
       }
+      broadcastState();
+    });
+
+    socket.on('drawCard', () => {
+      if (gameState !== 'lobby' || !players[socket.id]) return;
+      if (players[socket.id].hasDrawn) return;
+      
+      players[socket.id].location = getRandomLocation();
+      players[socket.id].hasDrawn = true;
       broadcastState();
     });
     
@@ -78,10 +87,12 @@ function init(socketIo) {
         socket.emit('errorMsg', 'Need a fugitive');
         return;
       }
+      if (playerList.some(p => !p.hasDrawn)) {
+        socket.emit('errorMsg', 'Tutti i giocatori devono pescare un biglietto prima di iniziare');
+        return;
+      }
       
-      // Reset tickets and locations
       playerList.forEach(p => {
-        p.location = getRandomLocation();
         p.history = [];
         if (p.role === 'fugitive') {
           p.tickets = { car: '∞', train: '∞', plane: '∞' };
@@ -270,7 +281,13 @@ function getPublicState(requestingSocketId) {
     const isReveal = REVEAL_TURNS.includes(turnNum);
     
     if (!isReveal) {
-      f.location = null; 
+      let lastRevealedNode = null;
+      for (let i = 0; i < turnNum; i++) {
+        if (REVEAL_TURNS.includes(i + 1)) {
+           lastRevealedNode = f.history[i].to;
+        }
+      }
+      f.location = lastRevealedNode; 
     }
     
     f.history = f.history.map((h, i) => {

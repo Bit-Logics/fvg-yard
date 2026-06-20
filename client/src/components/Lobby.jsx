@@ -11,12 +11,10 @@ const PawnSVG = ({ color, isFugitive }) => (
       <rect x="30" y="45" width="40" height="8" rx="4" />
       <path d="M 40 50 C 40 80, 20 100, 15 105 C 15 110, 20 110, 50 110 C 80 110, 85 110, 85 105 C 80 100, 60 80, 60 50 Z" />
     </g>
-    <path d="M 40 13 A 12 12 0 0 1 50 7" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" opacity="0.6" />
-    <path d="M 32 60 C 27 80, 25 95, 25 100" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.4" />
   </svg>
 );
 
-function Lobby({ players, onJoin, onStart, myId, onSetRole }) {
+function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw }) {
   const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState('#3b82f6');
   const me = players[myId];
@@ -115,22 +113,55 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole }) {
               <h3>Giocatori ({playersList.length}/10)</h3>
               <ul style={{ padding: 0 }}>
                 {playersList.map(p => (
-                  <li key={p.id} className={p.id === myId ? 'me' : ''} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <li key={p.id} className={p.id === myId ? 'me' : ''} style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                     <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: p.role === 'fugitive' ? '#111' : p.color }} />
-                    {p.name} <span className={`badge ${p.role}`}>{p.role === 'fugitive' ? 'Fuggitivo' : 'Detective'}</span>
+                    <span style={{ flex: 1 }}>{p.name} <span className={`badge ${p.role}`}>{p.role === 'fugitive' ? 'Fuggitivo' : 'Detective'}</span></span>
+                    
+                    {/* Card display */}
+                    {p.hasDrawn ? (
+                      <div style={{
+                        padding: '4px 10px', 
+                        backgroundColor: '#fef3c7', 
+                        border: '1px dashed #b45309', 
+                        borderRadius: '4px',
+                        color: '#b45309',
+                        fontSize: '12px',
+                        fontWeight: 'bold'
+                      }}>
+                        🎫 {p.role === 'fugitive' && p.id !== myId ? '???' : p.location}
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: '12px', color: '#94a3b8' }}>In attesa di pescare...</span>
+                    )}
                   </li>
                 ))}
               </ul>
             </div>
 
-            <button 
-              className="btn start-btn" 
-              onClick={onStart}
-              disabled={playersList.length < 2 || !playersList.some(p => p.role === 'fugitive')}
-            >
-              Inizia la Partita
-            </button>
-            {playersList.length < 2 && <small className="warn">Servono almeno 2 giocatori.</small>}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+              {!me.hasDrawn ? (
+                <button 
+                  className="btn" 
+                  style={{ backgroundColor: '#f59e0b', width: '100%' }}
+                  onClick={onDraw}
+                >
+                  Pesca Biglietto di Partenza
+                </button>
+              ) : (
+                <>
+                  <button 
+                    className="btn start-btn" 
+                    onClick={onStart}
+                    disabled={playersList.length < 2 || !playersList.some(p => p.role === 'fugitive') || !playersList.every(p => p.hasDrawn)}
+                    style={{ width: '100%' }}
+                  >
+                    Inizia la Partita
+                  </button>
+                  {playersList.length < 2 && <small className="warn" style={{ textAlign: 'center' }}>Servono almeno 2 giocatori.</small>}
+                  {!playersList.every(p => p.hasDrawn) && <small className="warn" style={{ textAlign: 'center' }}>In attesa che tutti i giocatori peschino...</small>}
+                </>
+              )}
+            </div>
           </div>
         )}
       </div>

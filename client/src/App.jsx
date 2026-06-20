@@ -111,6 +111,7 @@ function App() {
           onStart={handleStart} 
           myId={socket.id}
           onSetRole={handleSetRole}
+          onDraw={() => socket.emit('drawCard')}
         />
       )}
 
