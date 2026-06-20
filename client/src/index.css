@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
 :root {
   --bg-color: #e5ded2; /* Sabbia più scura per creare contrasto */
   --panel-bg: #fdf8f1; /* Beige chiarissimo (quasi bianco) per le card */
@@ -51,8 +53,6 @@
   --node-color: #d3ccc3;
   --node-border: #2b2e2a;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 * {
   box-sizing: border-box;
