@@ -4,10 +4,15 @@ import './Lobby.css';
 const AVAILABLE_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e'];
 
 const PawnSVG = ({ color, isFugitive }) => (
-  <svg width="80" height="100" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 10px 10px rgba(0,0,0,0.4))', transition: 'all 0.3s ease' }}>
-    <ellipse cx="12" cy="30" rx="10" ry="2" fill="rgba(0,0,0,0.6)"/>
-    <path d="M12 2 C8 2 8 8 12 10 C16 12 18 20 20 28 C20 30 18 30 12 30 C6 30 4 30 4 28 C6 20 8 12 12 10 C16 8 16 2 12 2 Z" fill={isFugitive ? '#111' : color} stroke={isFugitive ? "#ff0000" : "white"} strokeWidth="1"/>
-    <path d="M10 4 C8 4 8 7 10 8 C12 9 13 15 14 22" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+  <svg width="80" height="100" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 10px 10px rgba(0,0,0,0.4))', transition: 'all 0.3s ease' }}>
+    <ellipse cx="50" cy="112" rx="40" ry="6" fill="rgba(0,0,0,0.6)" />
+    <g fill={isFugitive ? '#1a1a1a' : color} stroke="rgba(255,255,255,0.3)" strokeWidth="2">
+      <circle cx="50" cy="25" r="20" />
+      <rect x="30" y="45" width="40" height="8" rx="4" />
+      <path d="M 40 50 C 40 80, 20 100, 15 105 C 15 110, 20 110, 50 110 C 80 110, 85 110, 85 105 C 80 100, 60 80, 60 50 Z" />
+    </g>
+    <path d="M 40 13 A 12 12 0 0 1 50 7" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" opacity="0.6" />
+    <path d="M 32 60 C 27 80, 25 95, 25 100" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.4" />
   </svg>
 );
 

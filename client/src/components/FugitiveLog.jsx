@@ -32,7 +32,7 @@ function FugitiveLog({ history = [], isFugitive }) {
       zIndex: 20,
       padding: '10px',
       borderRadius: '12px',
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      backgroundColor: 'var(--panel-bg)',
       boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
       width: '260px',
       maxHeight: '400px',

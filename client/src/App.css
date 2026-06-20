@@ -5,6 +5,15 @@
   overflow: hidden;
 }
 
+[data-theme="light"] {
+  --bg-color: #e2e8f0;
+  --text-color: #0f172a;
+  --primary-color: #3b82f6;
+  --accent-color: #10b981;
+  --panel-bg: rgba(248, 250, 252, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.4);
+}
+
 .theme-toggle {
   position: absolute;
   top: 20px;
