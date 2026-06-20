@@ -37,7 +37,7 @@ function App() {
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [maps, setMaps] = useState({ friuli: null, italy: null, porpetto: null });
-  const [selectedMap, setSelectedMap] = useState('friuli');
+  const [selectedMap, setSelectedMap] = useState('italy');
   const [lobbies, setLobbies] = useState([]);
   const [currentLobbyId, setCurrentLobbyId] = useState(null);
   const [votes, setVotes] = useState({});

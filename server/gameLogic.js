@@ -20,9 +20,9 @@ const STARTING_TICKETS = {
 let io;
 
 const LOBBIES = {
-  lobby1: { id: 'lobby1', name: 'Lobby 1', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'friuli' },
-  lobby2: { id: 'lobby2', name: 'Lobby 2', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'friuli' },
-  lobby3: { id: 'lobby3', name: 'Lobby 3', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'friuli' },
+  lobby1: { id: 'lobby1', name: 'Lobby 1', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'italy' },
+  lobby2: { id: 'lobby2', name: 'Lobby 2', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'italy' },
+  lobby3: { id: 'lobby3', name: 'Lobby 3', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'italy' },
 };
 
 const DISCONNECT_TIMEOUTS = {};
