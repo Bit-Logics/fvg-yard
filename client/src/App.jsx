@@ -10,8 +10,18 @@ import { Sun, Moon, TreePine, Flag } from 'lucide-react';
 import SoundEngine from './utils/SoundEngine';
 import './App.css';
 
+// Session ID setup
+let sessionId = localStorage.getItem('misterx_session_id');
+if (!sessionId) {
+  sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  localStorage.setItem('misterx_session_id', sessionId);
+}
+
 // Socket connection uses relative path so Vite proxy handles it
 const socket = io('/', {
+  auth: {
+    sessionId
+  },
   extraHeaders: {
     "Bypass-Tunnel-Reminder": "true",
     "ngrok-skip-browser-warning": "true"

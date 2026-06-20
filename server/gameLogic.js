@@ -29,7 +29,8 @@ function init(socketIo) {
   io = socketIo;
   
   io.on('connection', (socket) => {
-    console.log('Player connected:', socket.id);
+    socket.playerId = socket.handshake.auth.sessionId || socket.id;
+    console.log('Player connected:', socket.playerId);
     
     // Auto-assign to best lobby
     let bestLobbyId = 'lobby1';
@@ -45,7 +46,7 @@ function init(socketIo) {
     socket.lobbyId = bestLobbyId;
     socket.join(bestLobbyId);
     
-    socket.emit('gameState', getPublicState(socket.id, bestLobbyId));
+    socket.emit('gameState', getPublicState(socket.playerId, bestLobbyId));
     broadcastLobbiesMeta();
     
     socket.on('switchLobby', (targetLobbyId) => {
@@ -54,8 +55,8 @@ function init(socketIo) {
       const oldLobbyId = socket.lobbyId;
       if (oldLobbyId) {
         // Remove from old lobby
-        if (LOBBIES[oldLobbyId].players[socket.id]) {
-          delete LOBBIES[oldLobbyId].players[socket.id];
+        if (LOBBIES[oldLobbyId].players[socket.playerId]) {
+          delete LOBBIES[oldLobbyId].players[socket.playerId];
           if (Object.keys(LOBBIES[oldLobbyId].players).length < 2 && LOBBIES[oldLobbyId].gameState === 'playing') {
             LOBBIES[oldLobbyId].gameState = 'lobby';
             stopTimer(oldLobbyId);
@@ -67,7 +68,7 @@ function init(socketIo) {
       
       socket.lobbyId = targetLobbyId;
       socket.join(targetLobbyId);
-      socket.emit('gameState', getPublicState(socket.id, targetLobbyId));
+      socket.emit('gameState', getPublicState(socket.playerId, targetLobbyId));
       broadcastLobbiesMeta();
     });
 
@@ -82,25 +83,33 @@ function init(socketIo) {
         return;
       }
       
-      const playerNameRaw = data && typeof data === 'object' ? data.name : data;
-      const playerColorRaw = data && typeof data === 'object' ? data.color : '#3b82f6';
-      
-      // Sanitization
-      const playerName = playerNameRaw ? String(playerNameRaw).replace(/[<>]/g, '').substring(0, 15) : `Player ${Object.keys(lobby.players).length + 1}`;
-      const playerColor = playerColorRaw ? String(playerColorRaw).replace(/[<>]/g, '').substring(0, 15) : '#3b82f6';
+      if (lobby.players[socket.playerId]) {
+        // Player is reconnecting, just clear any disconnect timeout if it exists
+        if (lobby.players[socket.playerId].disconnectTimeout) {
+          clearTimeout(lobby.players[socket.playerId].disconnectTimeout);
+          lobby.players[socket.playerId].disconnectTimeout = null;
+        }
+      } else {
+        const playerNameRaw = data && typeof data === 'object' ? data.name : data;
+        const playerColorRaw = data && typeof data === 'object' ? data.color : '#3b82f6';
+        
+        // Sanitization
+        const playerName = playerNameRaw ? String(playerNameRaw).replace(/[<>]/g, '').substring(0, 15) : `Player ${Object.keys(lobby.players).length + 1}`;
+        const playerColor = playerColorRaw ? String(playerColorRaw).replace(/[<>]/g, '').substring(0, 15) : '#3b82f6';
 
-      lobby.players[socket.id] = {
-        id: socket.id,
-        name: playerName || `Player ${Object.keys(lobby.players).length + 1}`,
-        color: playerColor,
-        role: 'detective', 
-        location: null,
-        hasDrawn: false,
-        tickets: { ...STARTING_TICKETS },
-        specialTickets: { double: 0, secret: 0 },
-        isReady: false,
-        history: []
-      };
+        lobby.players[socket.playerId] = {
+          id: socket.playerId,
+          name: playerName || `Player ${Object.keys(lobby.players).length + 1}`,
+          color: playerColor,
+          role: 'detective', 
+          location: null,
+          hasDrawn: false,
+          tickets: { ...STARTING_TICKETS },
+          specialTickets: { double: 0, secret: 0 },
+          isReady: false,
+          history: []
+        };
+      }
       
       broadcastState(socket.lobbyId);
       broadcastLobbiesMeta();
@@ -108,31 +117,31 @@ function init(socketIo) {
     
     socket.on('setRole', (role) => {
       const lobby = LOBBIES[socket.lobbyId];
-      if (lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
+      if (lobby.gameState !== 'lobby' || !lobby.players[socket.playerId]) return;
       if (role === 'fugitive') {
         Object.values(lobby.players).forEach(p => {
           if (p.role === 'fugitive') p.role = 'detective';
         });
-        lobby.players[socket.id].role = 'fugitive';
+        lobby.players[socket.playerId].role = 'fugitive';
       }
       broadcastState(socket.lobbyId);
     });
 
     socket.on('voteMap', (mapId) => {
       const lobby = LOBBIES[socket.lobbyId];
-      if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
+      if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.playerId]) return;
       if (mapId !== 'friuli' && mapId !== 'italy' && mapId !== 'porpetto') return;
-      lobby.votes[socket.id] = mapId;
+      lobby.votes[socket.playerId] = mapId;
       broadcastState(socket.lobbyId);
     });
 
     socket.on('drawCard', () => {
       const lobby = LOBBIES[socket.lobbyId];
-      if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
-      if (lobby.players[socket.id].hasDrawn) return;
+      if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.playerId]) return;
+      if (lobby.players[socket.playerId].hasDrawn) return;
       
-      lobby.players[socket.id].hasDrawn = true;
-      lobby.players[socket.id].startingLocations = {
+      lobby.players[socket.playerId].hasDrawn = true;
+      lobby.players[socket.playerId].startingLocations = {
         friuli: getRandomLocationForMap('friuli', lobby),
         italy: getRandomLocationForMap('italy', lobby),
         porpetto: getRandomLocationForMap('porpetto', lobby)
@@ -205,10 +214,10 @@ function init(socketIo) {
 
     socket.on('voteEndGame', () => {
       const lobby = LOBBIES[socket.lobbyId];
-      if (!lobby || lobby.gameState !== 'playing' || !lobby.players[socket.id]) return;
+      if (!lobby || lobby.gameState !== 'playing' || !lobby.players[socket.playerId]) return;
       
       if (!lobby.endGameVotes) lobby.endGameVotes = {};
-      lobby.endGameVotes[socket.id] = true;
+      lobby.endGameVotes[socket.playerId] = true;
       
       const voteCount = Object.keys(lobby.endGameVotes).length;
       const totalPlayers = Object.keys(lobby.players).length;
@@ -263,14 +272,14 @@ function init(socketIo) {
       }
       
       const currentPlayerId = lobby.turnOrder[lobby.currentTurnIndex];
-      if (socket.id !== currentPlayerId) {
+      if (socket.playerId !== currentPlayerId) {
         socket.emit('errorMsg', 'Not your turn');
         return;
       }
       
-      const player = lobby.players[socket.id];
+      const player = lobby.players[socket.playerId];
       
-      if (!isValidMove(player.location, targetId, transportType, socket.id, lobby)) {
+      if (!isValidMove(player.location, targetId, transportType, socket.playerId, lobby)) {
         socket.emit('errorMsg', 'Invalid move');
         return;
       }
@@ -326,9 +335,9 @@ function init(socketIo) {
     
     socket.on('sendChatMessage', (messageText) => {
       const lobby = LOBBIES[socket.lobbyId];
-      if (!lobby || !lobby.players[socket.id]) return;
+      if (!lobby || !lobby.players[socket.playerId]) return;
       
-      const player = lobby.players[socket.id];
+      const player = lobby.players[socket.playerId];
       const now = Date.now();
       
       // Anti-spam: 1 message per 1.5 seconds
@@ -356,43 +365,48 @@ function init(socketIo) {
     });
 
     socket.on('disconnect', () => {
-      console.log('Player disconnected:', socket.id);
+      console.log('Player disconnected:', socket.playerId);
       const lId = socket.lobbyId;
       if (lId && LOBBIES[lId]) {
         const lobby = LOBBIES[lId];
-        if (lobby.players[socket.id]) {
-          const disconnectedPlayer = lobby.players[socket.id];
-          
-          if (lobby.gameState === 'playing') {
-            if (disconnectedPlayer.role === 'fugitive') {
-              lobby.gameState = 'finished';
-              io.to(lId).emit('gameOver', { winner: 'detectives', reason: 'Il Fuggitivo ha abbandonato la partita!' });
-              stopTimer(lId);
-              delete lobby.players[socket.id];
-            } else if (disconnectedPlayer.role === 'detective') {
-              Object.values(lobby.players).forEach(p => {
-                if (p.role === 'detective' && p.id !== socket.id) {
-                  p.tickets.car += 3;
-                  p.tickets.train += 2;
-                  p.tickets.plane += 1;
-                }
-              });
-              
-              delete lobby.players[socket.id];
-              
-              if (Object.keys(lobby.players).length < 2) {
-                lobby.gameState = 'lobby';
+        if (lobby.players[socket.playerId]) {
+          // 60-second grace period for reconnections
+          lobby.players[socket.playerId].disconnectTimeout = setTimeout(() => {
+            if (!LOBBIES[lId] || !LOBBIES[lId].players[socket.playerId]) return;
+            
+            const disconnectedPlayer = LOBBIES[lId].players[socket.playerId];
+            
+            if (LOBBIES[lId].gameState === 'playing') {
+              if (disconnectedPlayer.role === 'fugitive') {
+                LOBBIES[lId].gameState = 'finished';
+                io.to(lId).emit('gameOver', { winner: 'detectives', reason: 'Il Fuggitivo ha abbandonato la partita!' });
                 stopTimer(lId);
-              } else if (lobby.turnOrder[lobby.currentTurnIndex] === socket.id) {
-                nextTurn(lId);
+                delete LOBBIES[lId].players[socket.playerId];
+              } else if (disconnectedPlayer.role === 'detective') {
+                Object.values(LOBBIES[lId].players).forEach(p => {
+                  if (p.role === 'detective' && p.id !== socket.playerId) {
+                    p.tickets.car += 3;
+                    p.tickets.train += 2;
+                    p.tickets.plane += 1;
+                  }
+                });
+                
+                delete LOBBIES[lId].players[socket.playerId];
+                
+                if (Object.keys(LOBBIES[lId].players).length < 2) {
+                  LOBBIES[lId].gameState = 'lobby';
+                  stopTimer(lId);
+                } else if (LOBBIES[lId].turnOrder[LOBBIES[lId].currentTurnIndex] === socket.playerId) {
+                  nextTurn(lId);
+                }
               }
+            } else {
+              delete LOBBIES[lId].players[socket.playerId];
             }
-          } else {
-            delete lobby.players[socket.id];
-          }
-          
-          broadcastState(lId);
-          broadcastLobbiesMeta();
+            
+            broadcastState(lId);
+            broadcastLobbiesMeta();
+          }, 60000);
         }
       }
     });
