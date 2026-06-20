@@ -18,7 +18,7 @@ const socket = io('/', {
 });
 
 function App() {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
   const [errorMsg, setErrorMsg] = useState('');
   const [gameState, setGameState] = useState('lobby');
   const [players, setPlayers] = useState({});
