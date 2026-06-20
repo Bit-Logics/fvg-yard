@@ -6,6 +6,7 @@ import GameUI from './components/GameUI';
 import FugitiveLog from './components/FugitiveLog';
 import FugitiveControls from './components/FugitiveControls';
 import { Sun, Moon, TreePine } from 'lucide-react';
+import SoundEngine from './utils/SoundEngine';
 import './App.css';
 
 // Socket connection uses relative path so Vite proxy handles it
@@ -33,6 +34,23 @@ function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Handle Game Start Sound
+  useEffect(() => {
+    if (gameState === 'playing') {
+      SoundEngine.playStart();
+    }
+  }, [gameState]);
+
+  // Handle Turn Change Sound
+  useEffect(() => {
+    if (gameState === 'playing' && turnOrder.length > 0) {
+      const currentPlayerId = turnOrder[currentTurnIndex];
+      if (currentPlayerId === socket.id) {
+        SoundEngine.playTurn();
+      }
+    }
+  }, [currentTurnIndex, gameState, turnOrder]);
 
   useEffect(() => {
     // Fetch all maps

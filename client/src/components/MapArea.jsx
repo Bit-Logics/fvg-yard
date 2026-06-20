@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Map, { Marker, Source, Layer, NavigationControl } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import SoundEngine from '../utils/SoundEngine';
 import './MapArea.css';
 
 const PORPETTO_BOUNDS = [
@@ -175,7 +176,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
         
         {/* Car Button */}
         <button 
-          onClick={() => setSelectedTransport('car')}
+          onClick={() => { SoundEngine.playClick(); setSelectedTransport('car'); }}
           style={{
             background: selectedTransport === 'car' ? getTransportColor('car') : 'transparent',
             color: selectedTransport === 'car' ? 'white' : '#334155',
@@ -193,7 +194,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
 
         {/* Train Button */}
         <button 
-          onClick={() => setSelectedTransport('train')}
+          onClick={() => { SoundEngine.playClick(); setSelectedTransport('train'); }}
           style={{
             background: selectedTransport === 'train' ? getTransportColor('train') : 'transparent',
             color: selectedTransport === 'train' ? 'white' : '#334155',
@@ -211,7 +212,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
 
         {/* Plane Button */}
         <button 
-          onClick={() => setSelectedTransport('plane')}
+          onClick={() => { SoundEngine.playClick(); setSelectedTransport('plane'); }}
           style={{
             background: selectedTransport === 'plane' ? getTransportColor('plane') : 'transparent',
             color: selectedTransport === 'plane' ? 'white' : '#334155',
@@ -313,7 +314,10 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
               anchor="center"
               onClick={(e) => {
                 e.originalEvent.stopPropagation();
-                handleNodeClick(node.id);
+                if (isReachable) {
+                  SoundEngine.playMove();
+                  handleNodeClick(node.id);
+                }
               }}
             >
               <div 

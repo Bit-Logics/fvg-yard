@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Lobby.css';
+import SoundEngine from '../utils/SoundEngine';
 
 const AVAILABLE_COLORS = [
   '#3b82f6', // Blue
@@ -34,8 +35,14 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name.trim()) {
+      SoundEngine.playJoin();
       onJoin({ name: name.trim(), color: selectedColor });
     }
+  };
+
+  const handleVote = (mapId) => {
+    SoundEngine.playClick();
+    onVoteMap(mapId);
   };
 
   const playersList = Object.values(players);
@@ -76,7 +83,7 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
         )}
 
         <h1 style={{ marginBottom: 0 }}>FVG Yard</h1>
-        <p className="subtitle" style={{ marginTop: '5px' }}>L'inseguimento in Friuli-Venezia Giulia</p>
+        <p className="subtitle" style={{ marginTop: '5px' }}>L'inseguimento senza confini</p>
         
         {!joined && isGameInProgress ? (
           <div style={{ textAlign: 'center', marginTop: '30px' }}>
@@ -172,7 +179,7 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
               <h3 style={{ margin: '0 0 10px 0', fontSize: '1rem', textAlign: 'center' }}>Vota la Mappa</h3>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button 
-                  onClick={() => onVoteMap('friuli')}
+                  onClick={() => handleVote('friuli')}
                   style={{ 
                     flex: 1, padding: '10px', borderRadius: '6px', 
                     border: (votes && votes[myId] === 'friuli') || (!votes || !votes[myId]) ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
@@ -185,7 +192,7 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
                   </div>
                 </button>
                 <button 
-                  onClick={() => onVoteMap('italy')}
+                  onClick={() => handleVote('italy')}
                   style={{ 
                     flex: 1, padding: '10px', borderRadius: '6px', 
                     border: votes && votes[myId] === 'italy' ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
@@ -198,7 +205,7 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
                   </div>
                 </button>
                 <button 
-                  onClick={() => onVoteMap('porpetto')}
+                  onClick={() => handleVote('porpetto')}
                   style={{ 
                     flex: 1, padding: '10px', borderRadius: '6px', 
                     border: votes && votes[myId] === 'porpetto' ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
