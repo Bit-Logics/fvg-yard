@@ -20,6 +20,15 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer }) {
       </div>
 
       <div className="side-panel glass-panel">
+        <div className="player-info" style={{ marginBottom: '15px', paddingBottom: '10px', borderBottom: '1px solid var(--panel-border)' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>GIOCATORE</div>
+          <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: myPlayer.color !== '#111' ? myPlayer.color : 'var(--text-primary)' }}>
+            {myPlayer.name} {myPlayer.role === 'fugitive' && '(Mister X)'}
+          </div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '8px' }}>POSIZIONE</div>
+          <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>{myPlayer.location || 'Nascosta'}</div>
+        </div>
+
         <h3>I tuoi Biglietti</h3>
         <ul className="tickets-list">
           <li className="ticket-item car">

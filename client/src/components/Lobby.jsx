@@ -47,7 +47,23 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw }) {
         <h1 style={{ marginBottom: 0 }}>FVG Yard</h1>
         <p className="subtitle" style={{ marginTop: '5px' }}>L'inseguimento in Friuli-Venezia Giulia</p>
         
-        {!joined ? (
+        {!joined && isGameInProgress ? (
+          <div style={{ textAlign: 'center', marginTop: '30px' }}>
+            <h2 style={{ color: 'var(--primary-color)' }}>Partita in corso...</h2>
+            <p style={{ marginTop: '10px', color: 'var(--text-secondary)' }}>Sei in modalità Spettatore. Attendi la fine della partita per poterti unire.</p>
+            <div className="players-list" style={{ marginTop: '30px', textAlign: 'left' }}>
+              <h3>Giocatori in partita ({playersList.length})</h3>
+              <ul style={{ padding: 0 }}>
+                {playersList.map(p => (
+                  <li key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: p.role === 'fugitive' ? '#111' : p.color }} />
+                    <span style={{ flex: 1 }}>{p.name} <span className={`badge ${p.role}`}>{p.role === 'fugitive' ? 'Fuggitivo' : 'Detective'}</span></span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : !joined ? (
           <form onSubmit={handleSubmit} className="join-form" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
             <div style={{ position: 'relative', marginBottom: '20px', marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

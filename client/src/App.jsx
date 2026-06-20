@@ -108,7 +108,7 @@ function App() {
         </div>
       )}
 
-      {gameState === 'lobby' && (
+      {(gameState === 'lobby' || (gameState === 'playing' && !myPlayer)) && (
         <Lobby 
           players={players} 
           onJoin={handleJoin} 
@@ -116,10 +116,11 @@ function App() {
           myId={socket.id}
           onSetRole={handleSetRole}
           onDraw={() => socket.emit('drawCard')}
+          isGameInProgress={gameState === 'playing'}
         />
       )}
 
-      {(gameState === 'playing' || gameState === 'finished') && mapData && (
+      {(gameState === 'playing' || gameState === 'finished') && mapData && myPlayer && (
         <>
           <MapArea 
             mapData={mapData} 
