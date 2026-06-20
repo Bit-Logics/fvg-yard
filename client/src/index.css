@@ -41,6 +41,8 @@
   --map-bg-brightness: 0.6;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -48,7 +50,7 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   background-color: var(--bg-color);
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s;
@@ -58,11 +60,11 @@ body {
 
 .glass-panel {
   background: var(--panel-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--panel-border);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 4px; /* Taglio più netto e professionale */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15); /* Ombra più definita */
 }
 
 .btn {
@@ -70,16 +72,20 @@ body {
   color: white;
   border: 1px solid var(--primary-hover);
   padding: 10px 20px;
-  border-radius: 8px;
+  border-radius: 2px; /* Molto più squadrato e serio */
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn:hover {
   background-color: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(184, 121, 26, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn:active {
@@ -87,27 +93,38 @@ body {
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 h1, h2, h3 {
   font-weight: 700;
   letter-spacing: -0.02em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 input {
+  font-family: 'JetBrains Mono', monospace;
   background: transparent;
   border: 1px solid var(--panel-border);
   color: var(--text-primary);
   padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 2px;
+  font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
 }
 
 input:focus {
   border-color: var(--primary-color);
+  box-shadow: inset 0 0 0 1px var(--primary-color);
+}
+
+input:focus::placeholder {
+  color: transparent;
 }

@@ -28,17 +28,15 @@ function FugitiveLog({ history = [], isFugitive }) {
     <div className="glass-panel" style={{
       position: 'absolute',
       bottom: '20px',
-      left: '20px', // We'll move FugitiveControls slightly to the right in App.jsx
+      left: '20px',
       zIndex: 20,
       padding: '10px',
-      borderRadius: '12px',
-      backgroundColor: 'var(--panel-bg)',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
       width: '260px',
       maxHeight: '400px',
       display: 'flex',
       flexDirection: 'column',
-      pointerEvents: 'auto'
+      gap: '8px',
+      overflowY: 'auto'
     }}>
       <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#1e293b', textAlign: 'center' }}>
         Registro Mister X
