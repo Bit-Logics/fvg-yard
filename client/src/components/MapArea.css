@@ -8,48 +8,6 @@
   background-color: #000;
 }
 
-.map-wrapper {
-  width: 100%;
-  height: 100%;
-}
-
-.map-content {
-  position: relative;
-  width: 1000px;
-  height: 1000px;
-}
-
-.map-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  filter: brightness(var(--map-bg-brightness));
-  transition: filter 0.3s;
-}
-
-.map-background img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.map-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: auto; /* Allow clicking on SVG elements */
-}
-
-/* Make sure text cannot be selected to avoid annoying highlights while dragging */
-.map-svg text {
-  user-select: none;
-  pointer-events: none;
-}
-
 .transport-selector {
   position: absolute;
   bottom: 20px;
@@ -84,8 +42,8 @@
 }
 
 @keyframes pulse {
-  0% { r: 14; opacity: 1; }
-  100% { r: 25; opacity: 0; }
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 .pulse-anim {
