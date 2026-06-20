@@ -25,6 +25,8 @@ const LOBBIES = {
   lobby3: { id: 'lobby3', name: 'Lobby 3', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'friuli' },
 };
 
+const DISCONNECT_TIMEOUTS = {};
+
 function init(socketIo) {
   io = socketIo;
   
@@ -86,9 +88,9 @@ function init(socketIo) {
       
       if (lobby.players[socket.playerId]) {
         // Player is reconnecting, just clear any disconnect timeout if it exists
-        if (lobby.players[socket.playerId].disconnectTimeout) {
-          clearTimeout(lobby.players[socket.playerId].disconnectTimeout);
-          lobby.players[socket.playerId].disconnectTimeout = null;
+        if (DISCONNECT_TIMEOUTS[socket.playerId]) {
+          clearTimeout(DISCONNECT_TIMEOUTS[socket.playerId]);
+          delete DISCONNECT_TIMEOUTS[socket.playerId];
         }
       } else {
         const playerNameRaw = data && typeof data === 'object' ? data.name : data;
@@ -372,7 +374,7 @@ function init(socketIo) {
         const lobby = LOBBIES[lId];
         if (lobby.players[socket.playerId]) {
           // 60-second grace period for reconnections
-          lobby.players[socket.playerId].disconnectTimeout = setTimeout(() => {
+          DISCONNECT_TIMEOUTS[socket.playerId] = setTimeout(() => {
             if (!LOBBIES[lId] || !LOBBIES[lId].players[socket.playerId]) return;
             
             const disconnectedPlayer = LOBBIES[lId].players[socket.playerId];
