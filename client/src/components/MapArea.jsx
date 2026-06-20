@@ -8,6 +8,36 @@ const FVG_BOUNDS = [
   [14.2, 46.7]  // Northeast coordinates
 ];
 
+// Pawn SVG component
+const PawnSVG = ({ color, isFugitive }) => (
+  <svg width="32" height="40" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 4px 4px rgba(0,0,0,0.5))' }}>
+    <ellipse cx="12" cy="30" rx="10" ry="2" fill="rgba(0,0,0,0.6)"/>
+    <path d="M12 2 C8 2 8 8 12 10 C16 12 18 20 20 28 C20 30 18 30 12 30 C6 30 4 30 4 28 C6 20 8 12 12 10 C16 8 16 2 12 2 Z" fill={color} stroke={isFugitive ? "#ff0000" : "white"} strokeWidth="1"/>
+    <path d="M10 4 C8 4 8 7 10 8 C12 9 13 15 14 22" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+  </svg>
+);
+
+const OSM_STYLE = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap Contributors'
+    }
+  },
+  layers: [
+    {
+      id: 'osm',
+      type: 'raster',
+      source: 'osm',
+      minzoom: 0,
+      maxzoom: 19
+    }
+  ]
+};
+
 function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
   const [selectedTransport, setSelectedTransport] = useState('car');
   const [viewState, setViewState] = useState({
@@ -49,14 +79,23 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
           const sourceNode = mapData.nodes.find(n => n.id === l.source);
           const targetNode = mapData.nodes.find(n => n.id === l.target);
           if (!sourceNode || !targetNode) return null;
+          
+          // Use real geometry if available, else fallback to straight line
+          let coordinates = [];
+          if (l.geometry && l.geometry.length > 0) {
+            coordinates = l.geometry;
+          } else {
+            coordinates = [
+              [sourceNode.lng, sourceNode.lat],
+              [targetNode.lng, targetNode.lat]
+            ];
+          }
+
           return {
             type: 'Feature',
             geometry: {
               type: 'LineString',
-              coordinates: [
-                [sourceNode.lng, sourceNode.lat],
-                [targetNode.lng, targetNode.lat]
-              ]
+              coordinates: coordinates
             }
           };
         }).filter(Boolean);
@@ -152,7 +191,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
       <Map
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
-        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        mapStyle={OSM_STYLE}
         style={{ width: '100%', height: '100%' }}
         maxPitch={60}
         maxBounds={FVG_BOUNDS}
@@ -236,7 +275,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
                 <div style={{
                   width: isReachable ? 24 : 16,
                   height: isReachable ? 24 : 16,
-                  backgroundColor: 'var(--node-color)',
+                  backgroundColor: 'white',
                   border: `3px solid ${isReachable ? getTransportColor(selectedTransport) : '#334155'}`,
                   borderRadius: '50%',
                   boxShadow: isReachable ? `0 0 10px ${getTransportColor(selectedTransport)}` : '0 2px 4px rgba(0,0,0,0.3)'
@@ -245,8 +284,8 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
                   marginTop: 4,
                   color: '#1e293b',
                   fontWeight: 'bold',
-                  fontSize: '12px',
-                  textShadow: '0 0 4px white',
+                  fontSize: '14px',
+                  textShadow: '2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff',
                   pointerEvents: 'none'
                 }}>
                   {node.id}
@@ -271,37 +310,37 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
               longitude={node.lng + offset} 
               latitude={node.lat + offset} 
               anchor="bottom"
-              style={{ transition: 'none' }} /* Instant movement to sync perfectly with 480hz map panning */
+              style={{ transition: 'none', zIndex: 100 }} 
             >
               <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{
                   padding: '2px 8px',
-                  backgroundColor: p.role === 'fugitive' ? 'black' : 'var(--primary-color)',
-                  color: 'white',
+                  backgroundColor: 'white',
+                  color: '#1e293b',
                   borderRadius: '12px',
                   fontWeight: 'bold',
                   fontSize: '12px',
-                  border: '2px solid white',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                  marginBottom: '4px'
+                  border: '1px solid #ccc',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  marginBottom: '2px'
                 }}>
                   {p.name}
                 </div>
-                <div style={{
-                  width: 0, height: 0,
-                  borderLeft: '6px solid transparent',
-                  borderRight: '6px solid transparent',
-                  borderTop: `8px solid ${p.role === 'fugitive' ? 'black' : 'var(--primary-color)'}`
-                }}></div>
+                
+                {/* 3D Pawn Shape */}
+                <PawnSVG 
+                  color={p.role === 'fugitive' ? '#111' : 'var(--primary-color)'} 
+                  isFugitive={p.role === 'fugitive'}
+                />
                 
                 {isMe && (
                   <div className="pulse-anim" style={{
                     position: 'absolute',
-                    bottom: -10,
+                    bottom: 0,
                     width: 30,
                     height: 30,
                     borderRadius: '50%',
-                    border: '2px dashed var(--accent-color)'
+                    border: '3px dashed var(--accent-color)'
                   }}></div>
                 )}
               </div>
