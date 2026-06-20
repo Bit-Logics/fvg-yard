@@ -169,16 +169,6 @@
       "id": "Torre",
       "lat": 45.861,
       "lng": 13.2195
-    },
-    {
-      "id": "Borgo Fornalis",
-      "lat": 45.865,
-      "lng": 13.23
-    },
-    {
-      "id": "Chiesetta Fornalis",
-      "lat": 45.8655,
-      "lng": 13.231
     }
   ],
   "links": [
@@ -375,12 +365,6 @@
       "geometry": []
     },
     {
-      "source": "Borgo Fornalis",
-      "target": "Chiesetta Fornalis",
-      "type": "car",
-      "geometry": []
-    },
-    {
       "source": "Piazza",
       "target": "Campo Sportivo",
       "type": "train",
@@ -413,12 +397,6 @@
     {
       "source": "Parco Pubblico",
       "target": "Castello di Porpetto",
-      "type": "train",
-      "geometry": []
-    },
-    {
-      "source": "Castello di Porpetto",
-      "target": "Borgo Fornalis",
       "type": "train",
       "geometry": []
     },
@@ -471,12 +449,6 @@
       "geometry": []
     },
     {
-      "source": "Borgo Fornalis",
-      "target": "Torre",
-      "type": "train",
-      "geometry": []
-    },
-    {
       "source": "Borgo Pampaluna",
       "target": "Borgo Castello",
       "type": "train",
@@ -513,12 +485,6 @@
       "geometry": []
     },
     {
-      "source": "Castello di Porpetto",
-      "target": "Borgo Fornalis",
-      "type": "plane",
-      "geometry": []
-    },
-    {
       "source": "Pala",
       "target": "Zona Industriale",
       "type": "plane",
@@ -545,12 +511,6 @@
     {
       "source": "Piazza di Corgnolo",
       "target": "Zona Industriale",
-      "type": "plane",
-      "geometry": []
-    },
-    {
-      "source": "Borgo Pampaluna",
-      "target": "Borgo Fornalis",
       "type": "plane",
       "geometry": []
     }

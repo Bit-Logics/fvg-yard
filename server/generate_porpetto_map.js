@@ -43,11 +43,7 @@ const nodes = [
   // Frazione Castello
   { id: 'Castello di Porpetto', lat: 45.8600, lng: 13.2200 },
   { id: 'Borgo Castello', lat: 45.8605, lng: 13.2210 },
-  { id: 'Torre', lat: 45.8610, lng: 13.2195 },
-  
-  // Frazione Fornalis
-  { id: 'Borgo Fornalis', lat: 45.8650, lng: 13.2300 },
-  { id: 'Chiesetta Fornalis', lat: 45.8655, lng: 13.2310 }
+  { id: 'Torre', lat: 45.8610, lng: 13.2195 }
 ];
 
 const links = [
@@ -86,7 +82,6 @@ const links = [
   { source: 'Borgo Pampaluna', target: 'Villa Pampaluna', type: 'car', geometry: [] },
   { source: 'Castello di Porpetto', target: 'Borgo Castello', type: 'car', geometry: [] },
   { source: 'Castello di Porpetto', target: 'Torre', type: 'car', geometry: [] },
-  { source: 'Borgo Fornalis', target: 'Chiesetta Fornalis', type: 'car', geometry: [] },
   
   // Bici (train) - distanze medie (Collega centro a frazioni e tra loro)
   { source: 'Piazza', target: 'Campo Sportivo', type: 'train', geometry: [] },
@@ -95,7 +90,6 @@ const links = [
   { source: 'Stazione FS', target: 'Zona Industriale', type: 'train', geometry: [] },
   { source: 'Supermercato', target: 'Zona Industriale', type: 'train', geometry: [] },
   { source: 'Parco Pubblico', target: 'Castello di Porpetto', type: 'train', geometry: [] },
-  { source: 'Castello di Porpetto', target: 'Borgo Fornalis', type: 'train', geometry: [] },
   { source: 'Cimitero', target: 'Palude Fraghis', type: 'train', geometry: [] },
   { source: 'Cimitero', target: 'Piazza di Corgnolo', type: 'train', geometry: [] },
   { source: 'Fiume Corno', target: 'Piazza di Corgnolo', type: 'train', geometry: [] },
@@ -104,7 +98,6 @@ const links = [
   { source: 'Asilo', target: 'Supermercato', type: 'train', geometry: [] },
   { source: 'Campo Sportivo', target: 'Palude Fraghis', type: 'train', geometry: [] },
   { source: 'Palude Fraghis', target: 'Borgo Pampaluna', type: 'train', geometry: [] },
-  { source: 'Borgo Fornalis', target: 'Torre', type: 'train', geometry: [] },
   { source: 'Borgo Pampaluna', target: 'Borgo Castello', type: 'train', geometry: [] },
   { source: 'Chiesa di Corgnolo', target: 'Palude Fraghis', type: 'train', geometry: [] },
 
@@ -113,13 +106,11 @@ const links = [
   { source: 'Stazione FS', target: 'Zona Industriale', type: 'plane', geometry: [] },
   { source: 'Zona Industriale', target: 'Castello di Porpetto', type: 'plane', geometry: [] },
   { source: 'Pala', target: 'Castello di Porpetto', type: 'plane', geometry: [] },
-  { source: 'Castello di Porpetto', target: 'Borgo Fornalis', type: 'plane', geometry: [] },
   { source: 'Pala', target: 'Zona Industriale', type: 'plane', geometry: [] },
   { source: 'Municipio', target: 'Stazione FS', type: 'plane', geometry: [] },
   { source: 'Municipio', target: 'Borgo Pampaluna', type: 'plane', geometry: [] },
   { source: 'Municipio', target: 'Piazza di Corgnolo', type: 'plane', geometry: [] },
-  { source: 'Piazza di Corgnolo', target: 'Zona Industriale', type: 'plane', geometry: [] },
-  { source: 'Borgo Pampaluna', target: 'Borgo Fornalis', type: 'plane', geometry: [] }
+  { source: 'Piazza di Corgnolo', target: 'Zona Industriale', type: 'plane', geometry: [] }
 ];
 
 const mapData = { nodes, links };
