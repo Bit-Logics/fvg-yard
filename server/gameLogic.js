@@ -27,7 +27,7 @@ function init(socketIo) {
     // Send current state to new player
     socket.emit('gameState', getPublicState(socket.id));
     
-    socket.on('join', (name) => {
+    socket.on('join', (data) => {
       if (gameState !== 'lobby') {
         socket.emit('errorMsg', 'Game already started');
         return;
@@ -37,9 +37,13 @@ function init(socketIo) {
         return;
       }
       
+      const playerName = typeof data === 'object' ? data.name : data;
+      const playerColor = typeof data === 'object' ? data.color : '#3b82f6';
+
       players[socket.id] = {
         id: socket.id,
-        name: name || `Player ${Object.keys(players).length + 1}`,
+        name: playerName || `Player ${Object.keys(players).length + 1}`,
+        color: playerColor,
         role: 'detective', // Everyone starts as detective, must manually claim fugitive
         location: getRandomLocation(),
         tickets: { ...STARTING_TICKETS },

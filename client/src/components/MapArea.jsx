@@ -330,7 +330,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
                 
                 {/* 3D Pawn Shape */}
                 <PawnSVG 
-                  color={p.role === 'fugitive' ? '#111' : 'var(--primary-color)'} 
+                  color={p.role === 'fugitive' ? '#111' : p.color} 
                   isFugitive={p.role === 'fugitive'}
                 />
                 

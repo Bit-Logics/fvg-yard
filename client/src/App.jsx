@@ -71,8 +71,8 @@ function App() {
     setTheme(t => t === 'dark' ? 'light' : 'dark');
   };
 
-  const handleJoin = (name) => {
-    socket.emit('join', name);
+  const handleJoin = (data) => {
+    socket.emit('join', data);
   };
 
   const handleStart = () => {
