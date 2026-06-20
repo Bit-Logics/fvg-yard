@@ -36,6 +36,21 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // Handle Document Title
+  useEffect(() => {
+    if (gameState === 'lobby') {
+      document.title = 'FVG Yard - Menu';
+    } else {
+      const mapNames = {
+        friuli: 'Friuli VG',
+        italy: 'Italia',
+        porpetto: 'Porpetto'
+      };
+      const mapName = mapNames[selectedMap] || 'In Game';
+      document.title = `FVG Yard - ${mapName}`;
+    }
+  }, [gameState, selectedMap]);
+
   // Handle Game Start Sound
   useEffect(() => {
     if (gameState === 'playing') {
