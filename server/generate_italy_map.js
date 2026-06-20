@@ -24,7 +24,6 @@ const newTowns = [
   // Sardegna
   'Olbia', 'Nuoro', 'Oristano', 'Alghero', 'Porto Torres', 'Iglesias', 'Carbonia',
   // Corsica & Elba
-  'Bastia, France', 'Ajaccio, France', 'Bonifacio, France', 'Calvi, France', 'Corte, France', 'Porto-Vecchio, France',
   'Portoferraio',
   // Ragnatela Towns
   'Varese', 'Como', 'Bergamo', 'Brescia', 'Cremona', 'Mantova', 'Pavia', 'Lecco', 'Sondrio',
@@ -52,8 +51,6 @@ const connections = [
   { source: 'Roma', target: 'Cagliari', type: 'plane' },
   { source: 'Cagliari', target: 'Palermo', type: 'plane' },
   { source: 'Milano', target: 'Olbia', type: 'plane' },
-  { source: 'Olbia', target: 'Bastia, France', type: 'plane' },
-  { source: 'Roma', target: 'Ajaccio, France', type: 'plane' },
 
   // Trains (straight lines for distinction)
   { source: 'Torino', target: 'Milano', type: 'train' },
@@ -263,21 +260,10 @@ const connections = [
   { source: 'Sassari', target: 'Olbia', type: 'car' },
   { source: 'Nuoro', target: 'Olbia', type: 'car' },
   
-  // Corsica & Ferries
-  { source: 'Bastia, France', target: 'Corte, France', type: 'car' },
-  { source: 'Corte, France', target: 'Ajaccio, France', type: 'car' },
-  { source: 'Ajaccio, France', target: 'Bonifacio, France', type: 'car' },
-  { source: 'Bastia, France', target: 'Calvi, France', type: 'car' },
-  { source: 'Bastia, France', target: 'Porto-Vecchio, France', type: 'car' },
-  { source: 'Porto-Vecchio, France', target: 'Bonifacio, France', type: 'car' },
-  { source: 'Ajaccio, France', target: 'Calvi, France', type: 'car' },
-  
   // Ferries
   { source: 'Piombino', target: 'Portoferraio', type: 'ferry' },
-  { source: 'Livorno', target: 'Bastia, France', type: 'ferry' },
-  { source: 'Bonifacio, France', target: 'Porto Torres', type: 'ferry' },
-  { source: 'Piombino', target: 'Bastia, France', type: 'ferry' },
-  { source: 'Genova', target: 'Bastia, France', type: 'ferry' },
+  { source: 'Genova', target: 'Porto Torres', type: 'ferry' },
+  { source: 'Livorno', target: 'Olbia', type: 'ferry' },
   { source: 'Napoli', target: 'Palermo', type: 'ferry' },
   { source: 'Civitavecchia', target: 'Olbia', type: 'ferry' }
 ];

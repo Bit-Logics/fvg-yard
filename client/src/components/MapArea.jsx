@@ -267,6 +267,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="car-lines" 
             type="line" 
+            layout={{ visibility: selectedTransport === 'car' ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('car'),
               'line-width': 6,
@@ -280,6 +281,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="train-lines" 
             type="line" 
+            layout={{ visibility: selectedTransport === 'train' ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('train'),
               'line-width': 6,
@@ -295,6 +297,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="plane-lines" 
             type="line" 
+            layout={{ visibility: selectedTransport === 'plane' ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('plane'),
               'line-width': 5,
@@ -310,6 +313,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="ferry-lines" 
             type="line" 
+            layout={{ visibility: selectedTransport === 'ferry' ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('ferry'),
               'line-width': 5,
