@@ -73,32 +73,80 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
 
   return (
     <div className="map-area" style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* Dark overlay for boundaries if maxBounds isn't enough, though maxBounds naturally stops the user */}
-      <div className="transport-selector glass-panel" style={{ zIndex: 10, position: 'absolute', top: 20, left: 20 }}>
-        <label style={{ cursor: 'pointer', marginRight: '15px', color: 'black' }}>
-          <input 
-            type="radio" 
-            value="car" 
-            checked={selectedTransport === 'car'} 
-            onChange={(e) => setSelectedTransport(e.target.value)} 
-          /> Auto
-        </label>
-        <label style={{ cursor: 'pointer', marginRight: '15px', color: 'black' }}>
-          <input 
-            type="radio" 
-            value="train" 
-            checked={selectedTransport === 'train'} 
-            onChange={(e) => setSelectedTransport(e.target.value)} 
-          /> Treno
-        </label>
-        <label style={{ cursor: 'pointer', color: 'black' }}>
-          <input 
-            type="radio" 
-            value="plane" 
-            checked={selectedTransport === 'plane'} 
-            onChange={(e) => setSelectedTransport(e.target.value)} 
-          /> Aereo
-        </label>
+      {/* UI for transport selection */}
+      <div 
+        className="glass-panel" 
+        style={{ 
+          zIndex: 10, 
+          position: 'absolute', 
+          top: '20px', 
+          left: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          padding: '10px',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(255,255,255,0.85)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+        }}
+      >
+        <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#334155', textAlign: 'center', marginBottom: '4px' }}>
+          MEZZO
+        </div>
+        
+        {/* Car Button */}
+        <button 
+          onClick={() => setSelectedTransport('car')}
+          style={{
+            background: selectedTransport === 'car' ? getTransportColor('car') : 'transparent',
+            color: selectedTransport === 'car' ? 'white' : '#334155',
+            border: `2px solid ${getTransportColor('car')}`,
+            padding: '6px 12px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            fontSize: '14px'
+          }}
+        >
+          🚗 Auto
+        </button>
+
+        {/* Train Button */}
+        <button 
+          onClick={() => setSelectedTransport('train')}
+          style={{
+            background: selectedTransport === 'train' ? getTransportColor('train') : 'transparent',
+            color: selectedTransport === 'train' ? 'white' : '#334155',
+            border: `2px solid ${getTransportColor('train')}`,
+            padding: '6px 12px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            fontSize: '14px'
+          }}
+        >
+          🚂 Treno
+        </button>
+
+        {/* Plane Button */}
+        <button 
+          onClick={() => setSelectedTransport('plane')}
+          style={{
+            background: selectedTransport === 'plane' ? getTransportColor('plane') : 'transparent',
+            color: selectedTransport === 'plane' ? 'white' : '#334155',
+            border: `2px solid ${getTransportColor('plane')}`,
+            padding: '6px 12px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            fontSize: '14px'
+          }}
+        >
+          ✈️ Aereo
+        </button>
       </div>
 
       <Map
