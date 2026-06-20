@@ -1,0 +1,93 @@
+.map-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.map-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.map-content {
+  position: relative;
+  width: 1000px;
+  height: 1000px;
+}
+
+.map-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  filter: brightness(var(--map-bg-brightness));
+  transition: filter 0.3s;
+}
+
+.map-background img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto; /* Allow clicking on SVG elements */
+}
+
+/* Make sure text cannot be selected to avoid annoying highlights while dragging */
+.map-svg text {
+  user-select: none;
+  pointer-events: none;
+}
+
+.transport-selector {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  gap: 20px;
+  padding: 10px 20px;
+}
+
+.transport-selector label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.2s;
+}
+
+.transport-selector label:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.transport-selector input[type="radio"] {
+  accent-color: var(--primary-color);
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes pulse {
+  0% { r: 14; opacity: 1; }
+  100% { r: 25; opacity: 0; }
+}
+
+.pulse-anim {
+  animation: pulse 1.5s infinite;
+}

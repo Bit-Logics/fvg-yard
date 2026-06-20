@@ -1,0 +1,22 @@
+{
+  "name": "misterx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start:public": "concurrently \"npm run server\" \"npm run client\" \"npx -y @cloudflare/cloudflared tunnel --url http://localhost:5173\"",
+    "server": "npm run start --prefix server",
+    "client": "npm run dev --prefix client",
+    "build": "npm install --prefix client && npm run build --prefix client && npm install --prefix server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "localtunnel": "^2.0.2"
+  }
+}
