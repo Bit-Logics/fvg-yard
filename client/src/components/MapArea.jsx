@@ -3,13 +3,18 @@ import Map, { Marker, Source, Layer, NavigationControl } from 'react-map-gl/mapl
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './MapArea.css';
 
+const FVG_BOUNDS = [
+  [12.1, 45.5], // Southwest coordinates
+  [14.2, 46.7]  // Northeast coordinates
+];
+
 function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
   const [selectedTransport, setSelectedTransport] = useState('car');
   const [viewState, setViewState] = useState({
     longitude: 13.1,
     latitude: 46.0,
     zoom: 8.5,
-    pitch: 0, // default 2d
+    pitch: 0,
     bearing: 0
   });
 
@@ -29,14 +34,13 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
 
   const getTransportColor = (type) => {
     switch(type) {
-      case 'car': return '#0ea5e9'; // var(--route-car) roughly
-      case 'train': return '#f59e0b'; // var(--route-train)
-      case 'plane': return '#ef4444'; // var(--route-plane)
+      case 'car': return '#0ea5e9'; 
+      case 'train': return '#f59e0b'; 
+      case 'plane': return '#ef4444'; 
       default: return '#fff';
     }
   };
 
-  // Generate GeoJSON for links
   const { carGeojson, trainGeojson, planeGeojson } = useMemo(() => {
     const buildCollection = (type) => {
       const features = mapData.links
@@ -69,8 +73,9 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
 
   return (
     <div className="map-area" style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* Dark overlay for boundaries if maxBounds isn't enough, though maxBounds naturally stops the user */}
       <div className="transport-selector glass-panel" style={{ zIndex: 10, position: 'absolute', top: 20, left: 20 }}>
-        <label style={{ cursor: 'pointer', marginRight: '15px' }}>
+        <label style={{ cursor: 'pointer', marginRight: '15px', color: 'black' }}>
           <input 
             type="radio" 
             value="car" 
@@ -78,7 +83,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             onChange={(e) => setSelectedTransport(e.target.value)} 
           /> Auto
         </label>
-        <label style={{ cursor: 'pointer', marginRight: '15px' }}>
+        <label style={{ cursor: 'pointer', marginRight: '15px', color: 'black' }}>
           <input 
             type="radio" 
             value="train" 
@@ -86,7 +91,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             onChange={(e) => setSelectedTransport(e.target.value)} 
           /> Treno
         </label>
-        <label style={{ cursor: 'pointer' }}>
+        <label style={{ cursor: 'pointer', color: 'black' }}>
           <input 
             type="radio" 
             value="plane" 
@@ -99,9 +104,11 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
       <Map
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         style={{ width: '100%', height: '100%' }}
         maxPitch={60}
+        maxBounds={FVG_BOUNDS}
+        minZoom={7}
       >
         <NavigationControl position="bottom-right" />
 
@@ -113,12 +120,12 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             paint={{
               'line-color': getTransportColor('car'),
               'line-width': 4,
-              'line-opacity': 0.7
+              'line-opacity': 0.8
             }} 
           />
         </Source>
 
-        {/* Train Links Layer */}
+        {/* Train Links Layer - Offset to avoid overlapping car routes */}
         <Source id="train-routes" type="geojson" data={trainGeojson}>
           <Layer 
             id="train-lines" 
@@ -127,12 +134,13 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
               'line-color': getTransportColor('train'),
               'line-width': 4,
               'line-opacity': 0.9,
-              'line-dasharray': [2, 2]
+              'line-dasharray': [2, 2],
+              'line-offset': 5
             }} 
           />
         </Source>
 
-        {/* Plane Links Layer */}
+        {/* Plane Links Layer - Offset in the opposite direction */}
         <Source id="plane-routes" type="geojson" data={planeGeojson}>
           <Layer 
             id="plane-lines" 
@@ -141,7 +149,8 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
               'line-color': getTransportColor('plane'),
               'line-width': 3,
               'line-opacity': 0.8,
-              'line-dasharray': [1, 4]
+              'line-dasharray': [1, 4],
+              'line-offset': -5
             }} 
           />
         </Source>
@@ -180,16 +189,16 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
                   width: isReachable ? 24 : 16,
                   height: isReachable ? 24 : 16,
                   backgroundColor: 'var(--node-color)',
-                  border: `3px solid ${isReachable ? getTransportColor(selectedTransport) : 'var(--node-border)'}`,
+                  border: `3px solid ${isReachable ? getTransportColor(selectedTransport) : '#334155'}`,
                   borderRadius: '50%',
-                  boxShadow: isReachable ? `0 0 10px ${getTransportColor(selectedTransport)}` : 'none'
+                  boxShadow: isReachable ? `0 0 10px ${getTransportColor(selectedTransport)}` : '0 2px 4px rgba(0,0,0,0.3)'
                 }}></div>
                 <div style={{
                   marginTop: 4,
-                  color: 'white',
+                  color: '#1e293b',
                   fontWeight: 'bold',
                   fontSize: '12px',
-                  textShadow: '0 0 4px black',
+                  textShadow: '0 0 4px white',
                   pointerEvents: 'none'
                 }}>
                   {node.id}
@@ -205,10 +214,8 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
           if (!node) return null;
           
           const isMe = myPlayer && p.id === myPlayer.id;
-          
-          // Slight offset for multiple players on same node
           const numOnSameNode = playersList.filter(pl => pl.location === p.location).length;
-          const offset = numOnSameNode > 1 ? (i * 0.01) : 0; // Very rough lng/lat offset
+          const offset = numOnSameNode > 1 ? (i * 0.01) : 0; 
 
           return (
             <Marker 
@@ -216,7 +223,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
               longitude={node.lng + offset} 
               latitude={node.lat + offset} 
               anchor="bottom"
-              style={{ transition: 'all 0.5s ease' }}
+              style={{ transition: 'none' }} /* Instant movement to sync perfectly with 480hz map panning */
             >
               <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{
@@ -232,7 +239,6 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
                 }}>
                   {p.name}
                 </div>
-                {/* Pointer arrow down */}
                 <div style={{
                   width: 0, height: 0,
                   borderLeft: '6px solid transparent',
