@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChatWindow.css';
 
-function ChatWindow({ socket }) {
+function ChatWindow({ socket, sessionId }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -57,7 +57,7 @@ function ChatWindow({ socket }) {
             <div className="chat-empty">Nessun messaggio. Scrivi per primo!</div>
           ) : (
             messages.map((msg, idx) => (
-              <div key={idx} className={`chat-msg ${msg.playerId === socket.id ? 'my-msg' : ''}`}>
+              <div key={idx} className={`chat-msg ${msg.playerId === sessionId ? 'my-msg' : ''}`}>
                 <span className="chat-msg-author" style={{ color: msg.playerColor }}>
                   {msg.playerName}:
                 </span>

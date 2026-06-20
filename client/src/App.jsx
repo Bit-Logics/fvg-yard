@@ -76,7 +76,7 @@ function App() {
   useEffect(() => {
     if (gameState === 'playing' && turnOrder.length > 0) {
       const currentPlayerId = turnOrder[currentTurnIndex];
-      if (currentPlayerId === socket.id) {
+      if (currentPlayerId === sessionId) {
         SoundEngine.playTurn();
       }
     }
@@ -171,8 +171,8 @@ function App() {
     socket.emit('setRole', role);
   }
 
-  const myPlayer = players[socket.id];
-  const isMyTurn = turnOrder[currentTurnIndex] === socket.id;
+  const myPlayer = players[sessionId];
+  const isMyTurn = turnOrder[currentTurnIndex] === sessionId;
   const currentPlayer = players[turnOrder[currentTurnIndex]];
   const fugitivePlayer = Object.values(players).find(p => p.role === 'fugitive');
 
@@ -195,7 +195,7 @@ function App() {
           players={players} 
           onJoin={handleJoin} 
           onStart={handleStart} 
-          myId={socket.id}
+          myId={sessionId}
           onSetRole={handleSetRole}
           onDraw={() => socket.emit('drawCard')}
           isGameInProgress={gameState !== 'lobby'}
@@ -241,7 +241,7 @@ function App() {
             />
           )}
           
-          <ChatWindow socket={socket} />
+          <ChatWindow socket={socket} sessionId={sessionId} />
 
           {myPlayer?.role === 'fugitive' && isMyTurn && (
             <FugitiveControls 
