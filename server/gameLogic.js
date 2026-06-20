@@ -41,7 +41,7 @@ function init(socketIo) {
     broadcastLobbiesMeta();
     
     socket.on('switchLobby', (targetLobbyId) => {
-      if (!LOBBIES[targetLobbyId]) return;
+      if (typeof targetLobbyId !== 'string' || !LOBBIES[targetLobbyId]) return;
       
       const oldLobbyId = socket.lobbyId;
       if (oldLobbyId) {
@@ -74,8 +74,12 @@ function init(socketIo) {
         return;
       }
       
-      const playerName = typeof data === 'object' ? data.name : data;
-      const playerColor = typeof data === 'object' ? data.color : '#3b82f6';
+      const playerNameRaw = data && typeof data === 'object' ? data.name : data;
+      const playerColorRaw = data && typeof data === 'object' ? data.color : '#3b82f6';
+      
+      // Sanitization
+      const playerName = playerNameRaw ? String(playerNameRaw).replace(/[<>]/g, '').substring(0, 15) : `Player ${Object.keys(lobby.players).length + 1}`;
+      const playerColor = playerColorRaw ? String(playerColorRaw).replace(/[<>]/g, '').substring(0, 15) : '#3b82f6';
 
       lobby.players[socket.id] = {
         id: socket.id,
@@ -157,8 +161,17 @@ function init(socketIo) {
     
     socket.on('move', (data) => {
       const lobby = LOBBIES[socket.lobbyId];
-      if (lobby.gameState !== 'playing') return;
+      if (!lobby || lobby.gameState !== 'playing') return;
+      if (!data || typeof data !== 'object') return;
+      
       let { targetId, transportType, isDouble, isSecret } = data;
+      isDouble = !!isDouble;
+      isSecret = !!isSecret;
+      
+      if (!['car', 'train', 'plane'].includes(transportType)) {
+        socket.emit('errorMsg', 'Mezzo non valido');
+        return;
+      }
       
       const currentPlayerId = lobby.turnOrder[lobby.currentTurnIndex];
       if (socket.id !== currentPlayerId) {
