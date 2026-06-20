@@ -40,7 +40,7 @@ function init(socketIo) {
       players[socket.id] = {
         id: socket.id,
         name: name || `Player ${Object.keys(players).length + 1}`,
-        role: isFirst ? 'fugitive' : 'detective', // first player defaults to fugitive
+        role: 'detective', // Everyone starts as detective, must manually claim fugitive
         location: getRandomLocation(),
         tickets: { ...STARTING_TICKETS },
         isReady: false,
