@@ -3,6 +3,11 @@ import Map, { Marker, Source, Layer, NavigationControl } from 'react-map-gl/mapl
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './MapArea.css';
 
+const ITALY_BOUNDS = [
+  [6.5, 35.5], // Southwest coordinates
+  [19.0, 47.5]  // Northeast coordinates
+];
+
 const FVG_BOUNDS = [
   [12.1, 45.5], // Southwest coordinates
   [14.2, 46.7]  // Northeast coordinates
@@ -40,7 +45,7 @@ const OSM_STYLE = {
   ]
 };
 
-function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
+function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) {
   const [selectedTransport, setSelectedTransport] = useState('car');
   const [viewState, setViewState] = useState({
     longitude: 13.1,
@@ -49,6 +54,26 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
     pitch: 0,
     bearing: 0
   });
+
+  React.useEffect(() => {
+    if (selectedMap === 'italy') {
+      setViewState({
+        longitude: 12.5,
+        latitude: 41.9,
+        zoom: 5.5,
+        pitch: 0,
+        bearing: 0
+      });
+    } else {
+      setViewState({
+        longitude: 13.1,
+        latitude: 46.0,
+        zoom: 8.5,
+        pitch: 0,
+        bearing: 0
+      });
+    }
+  }, [selectedMap]);
 
   const handleNodeClick = (nodeId) => {
     if (!isMyTurn || !myPlayer) return;
@@ -196,8 +221,8 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
         mapStyle={OSM_STYLE}
         style={{ width: '100%', height: '100%' }}
         maxPitch={60}
-        maxBounds={FVG_BOUNDS}
-        minZoom={5}
+        maxBounds={selectedMap === 'italy' ? ITALY_BOUNDS : FVG_BOUNDS}
+        minZoom={selectedMap === 'italy' ? 4 : 5}
       >
         <NavigationControl position="bottom-right" />
 

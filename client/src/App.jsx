@@ -23,20 +23,24 @@ function App() {
   const [turnOrder, setTurnOrder] = useState([]);
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [mapData, setMapData] = useState(null);
+  const [maps, setMaps] = useState({ friuli: null, italy: null });
+  const [selectedMap, setSelectedMap] = useState('friuli');
   const [lobbies, setLobbies] = useState([]);
   const [currentLobbyId, setCurrentLobbyId] = useState('lobby1');
+  const [votes, setVotes] = useState({});
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   useEffect(() => {
-    // Fetch map data
-    fetch('/map')
-      .then(res => res.json())
-      .then(data => setMapData(data))
-      .catch(err => console.error("Failed to load map data", err));
+    // Fetch both maps
+    Promise.all([
+      fetch('/map/friuli').then(res => res.json()),
+      fetch('/map/italy').then(res => res.json())
+    ])
+    .then(([f, i]) => setMaps({ friuli: f, italy: i }))
+    .catch(err => console.error("Failed to load maps", err));
 
     socket.on('gameState', (state) => {
       setGameState(state.gameState);
@@ -45,6 +49,8 @@ function App() {
       setCurrentTurnIndex(state.currentTurnIndex);
       setTimeLeft(state.timeLeft);
       if (state.lobbyId) setCurrentLobbyId(state.lobbyId);
+      if (state.selectedMap) setSelectedMap(state.selectedMap);
+      if (state.votes) setVotes(state.votes);
     });
 
     socket.on('lobbiesMeta', (meta) => {
@@ -133,13 +139,16 @@ function App() {
           lobbies={lobbies}
           currentLobbyId={currentLobbyId}
           onSwitchLobby={handleSwitchLobby}
+          votes={votes}
+          onVoteMap={(mapId) => socket.emit('voteMap', mapId)}
         />
       )}
 
-      {(gameState === 'playing' || gameState === 'finished') && mapData && myPlayer && (
+      {(gameState === 'playing' || gameState === 'finished') && maps[selectedMap] && myPlayer && (
         <>
           <MapArea 
-            mapData={mapData} 
+            mapData={maps[selectedMap]} 
+            selectedMap={selectedMap}
             players={players} 
             myPlayer={myPlayer}
             isMyTurn={isMyTurn}
@@ -162,7 +171,7 @@ function App() {
           {myPlayer?.role === 'fugitive' && isMyTurn && (
             <FugitiveControls 
               onMove={handleMove}
-              mapData={mapData}
+              mapData={maps[selectedMap]}
               specialTickets={myPlayer.specialTickets}
             />
           )}

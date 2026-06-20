@@ -167,6 +167,39 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
               )}
             </div>
 
+            {/* Voting Section */}
+            <div className="map-voting" style={{ margin: '20px 0', padding: '15px', backgroundColor: 'var(--bg-accent)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '1rem', textAlign: 'center' }}>Vota la Mappa</h3>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button 
+                  onClick={() => onVoteMap('friuli')}
+                  style={{ 
+                    flex: 1, padding: '10px', borderRadius: '6px', 
+                    border: (votes && votes[myId] === 'friuli') || (!votes || !votes[myId]) ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
+                    backgroundColor: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.2s' 
+                  }}
+                >
+                  <div>Friuli-VG</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
+                    {Object.values(votes || {}).filter(v => v !== 'italy').length + (playersList.length - Object.values(votes || {}).length)}
+                  </div>
+                </button>
+                <button 
+                  onClick={() => onVoteMap('italy')}
+                  style={{ 
+                    flex: 1, padding: '10px', borderRadius: '6px', 
+                    border: votes && votes[myId] === 'italy' ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
+                    backgroundColor: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.2s' 
+                  }}
+                >
+                  <div>Italia Intera</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
+                    {Object.values(votes || {}).filter(v => v === 'italy').length}
+                  </div>
+                </button>
+              </div>
+            </div>
+
             <div className="players-list">
               <h3>Giocatori ({playersList.length}/10)</h3>
               <ul style={{ padding: 0 }}>

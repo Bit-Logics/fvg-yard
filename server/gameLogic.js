@@ -1,4 +1,9 @@
-const mapData = require('./mapData.json');
+const mapDataFriuli = require('./mapData.json');
+const mapDataItaly = require('./mapDataItaly.json');
+const MAPS = {
+  friuli: mapDataFriuli,
+  italy: mapDataItaly
+};
 
 const TURN_TIME_MS = 60000; // 60 seconds
 const REVEAL_TURNS = [3, 8, 13, 18, 24];
@@ -12,9 +17,9 @@ const STARTING_TICKETS = {
 let io;
 
 const LOBBIES = {
-  lobby1: { id: 'lobby1', name: 'Lobby 1', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null },
-  lobby2: { id: 'lobby2', name: 'Lobby 2', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null },
-  lobby3: { id: 'lobby3', name: 'Lobby 3', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null },
+  lobby1: { id: 'lobby1', name: 'Lobby 1', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'friuli' },
+  lobby2: { id: 'lobby2', name: 'Lobby 2', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'friuli' },
+  lobby3: { id: 'lobby3', name: 'Lobby 3', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null, votes: {}, selectedMap: 'friuli' },
 };
 
 function init(socketIo) {
@@ -110,12 +115,21 @@ function init(socketIo) {
       broadcastState(socket.lobbyId);
     });
 
+    socket.on('voteMap', (mapId) => {
+      const lobby = LOBBIES[socket.lobbyId];
+      if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
+      if (mapId !== 'friuli' && mapId !== 'italy') return;
+      lobby.votes[socket.id] = mapId;
+      broadcastState(socket.lobbyId);
+    });
+
     socket.on('drawCard', () => {
       const lobby = LOBBIES[socket.lobbyId];
-      if (lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
+      if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
       if (lobby.players[socket.id].hasDrawn) return;
       
-      lobby.players[socket.id].location = getRandomLocation(lobby);
+      // Location is not drawn yet, because map is not decided!
+      // We will assign locations dynamically when game starts.
       lobby.players[socket.id].hasDrawn = true;
       broadcastState(socket.lobbyId);
     });
@@ -133,9 +147,24 @@ function init(socketIo) {
         return;
       }
       if (playerList.some(p => !p.hasDrawn)) {
-        socket.emit('errorMsg', 'Tutti i giocatori devono pescare un biglietto prima di iniziare');
+        socket.emit('errorMsg', 'Tutti i giocatori devono essersi dichiarati pronti (pescare un biglietto) prima di iniziare');
         return;
       }
+
+      // Tally votes
+      let friuliVotes = 0;
+      let italyVotes = 0;
+      for (const p of playerList) {
+        const v = lobby.votes[p.id];
+        if (v === 'italy') italyVotes++;
+        else friuliVotes++;
+      }
+      lobby.selectedMap = italyVotes > friuliVotes ? 'italy' : 'friuli';
+      
+      // Assign starting locations now that map is decided
+      playerList.forEach(p => {
+        p.location = getRandomLocation(lobby);
+      });
       
       playerList.forEach(p => {
         p.history = [];
@@ -254,6 +283,7 @@ function init(socketIo) {
 }
 
 function getRandomLocation(lobby) {
+  const mapData = MAPS[lobby.selectedMap];
   const nodes = mapData.nodes;
   let loc;
   do {
@@ -263,6 +293,7 @@ function getRandomLocation(lobby) {
 }
 
 function isValidMove(fromId, toId, transportType, playerId, lobby) {
+  const mapData = MAPS[lobby.selectedMap];
   const hasLink = mapData.links.some(l => 
     ((l.source === fromId && l.target === toId) || 
      (l.source === toId && l.target === fromId)) && 
@@ -380,7 +411,9 @@ function getPublicState(requestingSocketId, lobbyId) {
     currentTurnIndex: lobby.currentTurnIndex,
     currentPlayerId: lobby.turnOrder[lobby.currentTurnIndex],
     timeLeft: lobby.timeLeft,
-    lobbyId: lobby.id
+    lobbyId: lobby.id,
+    votes: lobby.votes,
+    selectedMap: lobby.selectedMap
   };
 }
 

@@ -15,10 +15,15 @@ const io = new Server(server, {
 });
 
 const gameLogic = require('./gameLogic');
-const mapData = require('./mapData.json');
+const mapDataFriuli = require('./mapData.json');
+const mapDataItaly = require('./mapDataItaly.json');
 
-app.get('/map', (req, res) => {
-  res.json(mapData);
+app.get('/map/friuli', (req, res) => {
+  res.json(mapDataFriuli);
+});
+
+app.get('/map/italy', (req, res) => {
+  res.json(mapDataItaly);
 });
 
 // Pass io to gameLogic to handle socket connections
