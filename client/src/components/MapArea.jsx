@@ -113,7 +113,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
     }
   };
 
-  const { carGeojson, trainGeojson, planeGeojson } = useMemo(() => {
+  const { carGeojson, trainGeojson, planeGeojson, ferryGeojson } = useMemo(() => {
     const buildCollection = (type) => {
       const features = mapData.links
         .filter(l => l.type === type)
