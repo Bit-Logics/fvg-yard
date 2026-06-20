@@ -1,4 +1,5 @@
 import React from 'react';
+import './FugitiveLog.css';
 
 const REVEAL_TURNS = [3, 8, 13, 18, 24];
 
@@ -31,54 +32,54 @@ function FugitiveLog({ history = [], isFugitive, selectedMap }) {
     return '';
   };
 
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
   return (
-    <div className="glass-panel" style={{
-      position: 'absolute',
-      bottom: '20px',
-      left: '20px',
-      zIndex: 20,
-      padding: '10px',
-      width: '260px',
-      maxHeight: '400px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-      overflowY: 'auto'
-    }}>
-      <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: 'var(--text-primary)', textAlign: 'center' }}>
-        Registro Mister X
-      </h3>
-      
-      <div style={{ overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-          <thead>
-            <tr>
-              <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'left', color: 'var(--text-primary)' }}>#</th>
-              <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'center', color: 'var(--text-primary)' }}>Mezzo</th>
-              <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'right', color: 'var(--text-primary)' }}>Luogo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(row => (
-              <tr key={row.turn} style={{ 
-                backgroundColor: row.isReveal ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
-                borderBottom: '1px solid var(--border-light)'
-              }}>
-                <td style={{ padding: '4px 2px', fontWeight: row.isReveal ? 'bold' : 'normal', color: 'var(--text-secondary)' }}>
-                  {row.turn}
-                </td>
-                <td style={{ padding: '4px 2px', textAlign: 'center', fontSize: '16px' }}>
-                  {row.move ? getEmoji(row.move.displayType) : <span style={{ opacity: 0.2 }}>-</span>}
-                </td>
-                <td style={{ padding: '4px 2px', textAlign: 'right', fontWeight: 'bold', color: row.isReveal ? '#f59e0b' : 'var(--text-primary)' }}>
-                  {row.move && (isFugitive || row.move.to) ? row.move.to : (row.isReveal ? '?' : '---')}
-                </td>
+    <>
+      {/* Mobile Toggle Button */}
+      <button 
+        className="mobile-log-toggle"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        📜 Storico {isExpanded ? '▼' : '▲'}
+      </button>
+
+      <div className={`glass-panel fugitive-log-panel ${isExpanded ? 'expanded' : ''}`}>
+        <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: 'var(--text-primary)', textAlign: 'center' }}>
+          Registro Mister X
+        </h3>
+        
+        <div style={{ overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'left', color: 'var(--text-primary)' }}>#</th>
+                <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'center', color: 'var(--text-primary)' }}>Mezzo</th>
+                <th style={{ padding: '4px', borderBottom: '2px solid var(--border-light)', textAlign: 'right', color: 'var(--text-primary)' }}>Luogo</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map(row => (
+                <tr key={row.turn} style={{ 
+                  backgroundColor: row.isReveal ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
+                  borderBottom: '1px solid var(--border-light)'
+                }}>
+                  <td style={{ padding: '4px 2px', fontWeight: row.isReveal ? 'bold' : 'normal', color: 'var(--text-secondary)' }}>
+                    {row.turn}
+                  </td>
+                  <td style={{ padding: '4px 2px', textAlign: 'center', fontSize: '16px' }}>
+                    {row.move ? getEmoji(row.move.displayType) : <span style={{ opacity: 0.2 }}>-</span>}
+                  </td>
+                  <td style={{ padding: '4px 2px', textAlign: 'right', fontWeight: 'bold', color: row.isReveal ? '#f59e0b' : 'var(--text-primary)' }}>
+                    {row.move && (isFugitive || row.move.to) ? row.move.to : (row.isReveal ? '?' : '---')}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

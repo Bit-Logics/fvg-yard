@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './FugitiveControls.css';
 
 function FugitiveControls({ onMove, mapData, specialTickets, isDouble, setIsDouble, isSecret, setIsSecret }) {
   const [inputValue, setInputValue] = useState('');
@@ -29,17 +30,7 @@ function FugitiveControls({ onMove, mapData, specialTickets, isDouble, setIsDoub
   };
 
   return (
-    <div className="glass-panel" style={{
-      position: 'absolute',
-      bottom: '20px',
-      left: '300px',
-      zIndex: 20,
-      padding: '15px',
-      width: '280px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '10px'
-    }}>
+    <div className="glass-panel fugitive-controls-panel">
       <h3 style={{ margin: 0, fontSize: '16px', color: '#1e293b' }}>Pannello Fuggitivo</h3>
       
       <div style={{ display: 'flex', gap: '5px' }}>

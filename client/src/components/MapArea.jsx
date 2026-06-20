@@ -1,8 +1,8 @@
+import './MapArea.css';
 import React, { useState, useMemo } from 'react';
 import Map, { Marker, Source, Layer, NavigationControl } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import SoundEngine from '../utils/SoundEngine';
-import './MapArea.css';
 
 const PORPETTO_BOUNDS = [
   [13.18, 45.83], // SW
@@ -170,22 +170,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
   return (
     <div className="map-area" style={{ position: 'relative', width: '100%', height: '100%' }}>
       {/* UI for transport selection */}
-      <div 
-        className="glass-panel" 
-        style={{ 
-          zIndex: 10, 
-          position: 'absolute', 
-          top: '20px', 
-          left: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-          padding: '10px',
-          borderRadius: '12px',
-          backgroundColor: 'var(--panel-bg)',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-        }}
-      >
+      <div className="glass-panel transport-panel">
         <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#334155', textAlign: 'center', marginBottom: '4px' }}>
           MEZZO
         </div>
@@ -302,6 +287,18 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
         maxBounds={selectedMap === 'italy' ? ITALY_BOUNDS : (selectedMap === 'porpetto' ? PORPETTO_BOUNDS : FVG_BOUNDS)}
         minZoom={selectedMap === 'italy' ? 2 : (selectedMap === 'porpetto' ? 14 : 5)}
       >
+        {/* Mask Layer */}
+        {selectedMap === 'italy' && (
+          <Source id="italy-mask" type="geojson" data="/italy_mask.json">
+            <Layer id="italy-mask-fill" type="fill" paint={{ 'fill-color': theme === 'dark' ? '#000000' : '#ffffff', 'fill-opacity': 0.7 }} />
+          </Source>
+        )}
+        {selectedMap === 'friuli' && (
+          <Source id="friuli-mask" type="geojson" data="/friuli_mask.json">
+            <Layer id="friuli-mask-fill" type="fill" paint={{ 'fill-color': theme === 'dark' ? '#000000' : '#ffffff', 'fill-opacity': 0.7 }} />
+          </Source>
+        )}
+
         <NavigationControl position="bottom-right" />
 
         {/* Car Links Layer */}

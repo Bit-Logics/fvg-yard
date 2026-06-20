@@ -324,16 +324,73 @@ function init(socketIo) {
       }
     });
     
+    socket.on('sendChatMessage', (messageText) => {
+      const lobby = LOBBIES[socket.lobbyId];
+      if (!lobby || !lobby.players[socket.id]) return;
+      
+      const player = lobby.players[socket.id];
+      const now = Date.now();
+      
+      // Anti-spam: 1 message per 1.5 seconds
+      if (player.lastMessageTime && now - player.lastMessageTime < 1500) {
+        socket.emit('errorMsg', 'Aspetta un attimo prima di inviare un altro messaggio.');
+        return;
+      }
+      player.lastMessageTime = now;
+      
+      if (typeof messageText !== 'string') return;
+      
+      const text = messageText.trim().substring(0, 200); // Max 200 chars
+      if (text.length === 0) return;
+      
+      // Sanitize
+      const sanitizedText = text.replace(/[<>]/g, '');
+      
+      io.to(socket.lobbyId).emit('chatMessage', {
+        playerId: player.id,
+        playerName: player.name,
+        playerColor: player.color,
+        text: sanitizedText,
+        timestamp: now
+      });
+    });
+
     socket.on('disconnect', () => {
       console.log('Player disconnected:', socket.id);
       const lId = socket.lobbyId;
       if (lId && LOBBIES[lId]) {
-        if (LOBBIES[lId].players[socket.id]) {
-          delete LOBBIES[lId].players[socket.id];
-          if (Object.keys(LOBBIES[lId].players).length < 2 && LOBBIES[lId].gameState === 'playing') {
-            LOBBIES[lId].gameState = 'lobby';
-            stopTimer(lId);
+        const lobby = LOBBIES[lId];
+        if (lobby.players[socket.id]) {
+          const disconnectedPlayer = lobby.players[socket.id];
+          
+          if (lobby.gameState === 'playing') {
+            if (disconnectedPlayer.role === 'fugitive') {
+              lobby.gameState = 'finished';
+              io.to(lId).emit('gameOver', { winner: 'detectives', reason: 'Il Fuggitivo ha abbandonato la partita!' });
+              stopTimer(lId);
+              delete lobby.players[socket.id];
+            } else if (disconnectedPlayer.role === 'detective') {
+              Object.values(lobby.players).forEach(p => {
+                if (p.role === 'detective' && p.id !== socket.id) {
+                  p.tickets.car += 3;
+                  p.tickets.train += 2;
+                  p.tickets.plane += 1;
+                }
+              });
+              
+              delete lobby.players[socket.id];
+              
+              if (Object.keys(lobby.players).length < 2) {
+                lobby.gameState = 'lobby';
+                stopTimer(lId);
+              } else if (lobby.turnOrder[lobby.currentTurnIndex] === socket.id) {
+                nextTurn(lId);
+              }
+            }
+          } else {
+            delete lobby.players[socket.id];
           }
+          
           broadcastState(lId);
           broadcastLobbiesMeta();
         }
@@ -404,8 +461,10 @@ function nextTurn(lobbyId) {
   const lobby = LOBBIES[lobbyId];
   lobby.currentTurnIndex = (lobby.currentTurnIndex + 1) % lobby.turnOrder.length;
   
-  const player = lobby.players[lobby.turnOrder[lobby.currentTurnIndex]];
-  if (player.role === 'detective' && Object.values(player.tickets).every(t => t === 0)) {
+  const playerId = lobby.turnOrder[lobby.currentTurnIndex];
+  const player = lobby.players[playerId];
+  
+  if (!player || (player.role === 'detective' && Object.values(player.tickets).every(t => t === 0))) {
      nextTurn(lobbyId);
      return;
   }
@@ -451,13 +510,7 @@ function getPublicState(requestingSocketId, lobbyId) {
     const isReveal = REVEAL_TURNS.includes(turnNum);
     
     if (!isReveal) {
-      let lastRevealedNode = null;
-      for (let i = 0; i < turnNum; i++) {
-        if (REVEAL_TURNS.includes(i + 1)) {
-           lastRevealedNode = f.history[i].to;
-        }
-      }
-      f.location = lastRevealedNode; 
+      f.location = null; 
     }
     
     f.history = f.history.map((h, i) => {
@@ -484,20 +537,12 @@ function getPublicState(requestingSocketId, lobbyId) {
 }
 
 function broadcastState(lobbyId) {
-  if (!io) return;
   const lobby = LOBBIES[lobbyId];
   if (!lobby) return;
   
-  // Get all sockets in this lobby
-  const room = io.sockets.adapter.rooms.get(lobbyId);
-  if (room) {
-    for (const socketId of room) {
-      const socket = io.sockets.sockets.get(socketId);
-      if (socket) {
-        socket.emit('gameState', getPublicState(socketId, lobbyId));
-      }
-    }
-  }
+  Object.keys(lobby.players).forEach(socketId => {
+    io.to(socketId).emit('gameState', getPublicState(socketId, lobbyId));
+  });
 }
 
 function broadcastLobbiesMeta() {

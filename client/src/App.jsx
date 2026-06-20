@@ -5,6 +5,7 @@ import MapArea from './components/MapArea';
 import GameUI from './components/GameUI';
 import FugitiveLog from './components/FugitiveLog';
 import FugitiveControls from './components/FugitiveControls';
+import ChatWindow from './components/ChatWindow';
 import { Sun, Moon, TreePine, Flag } from 'lucide-react';
 import SoundEngine from './utils/SoundEngine';
 import './App.css';
@@ -228,6 +229,8 @@ function App() {
               selectedMap={selectedMap}
             />
           )}
+          
+          <ChatWindow socket={socket} />
 
           {myPlayer?.role === 'fugitive' && isMyTurn && (
             <FugitiveControls 

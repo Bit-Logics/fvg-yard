@@ -1,0 +1,50 @@
+.fugitive-log-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px;
+  width: 260px;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.mobile-log-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-log-toggle {
+    display: block;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .fugitive-log-panel {
+    transform: scale(0.85);
+    transform-origin: bottom left;
+    bottom: 60px; /* Above the button */
+    left: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .fugitive-log-panel.expanded {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

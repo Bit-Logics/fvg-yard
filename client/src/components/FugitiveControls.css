@@ -1,0 +1,23 @@
+.fugitive-controls-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 300px;
+  z-index: 1000;
+  padding: 15px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .fugitive-controls-panel {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
+    width: 90%;
+    max-width: 350px;
+    padding: 10px;
+    gap: 10px;
+  }
+}
