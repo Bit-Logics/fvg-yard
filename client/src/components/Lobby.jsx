@@ -84,6 +84,20 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
 
         <h1 style={{ marginBottom: 0 }}>FVG Yard</h1>
         <p className="subtitle" style={{ marginTop: '5px' }}>L'inseguimento senza confini</p>
+
+        <div style={{
+          backgroundColor: 'rgba(255,255,255,0.05)',
+          borderLeft: '4px solid var(--primary-color)',
+          padding: '10px 15px',
+          borderRadius: '4px',
+          margin: '20px 0',
+          fontSize: '0.9rem',
+          lineHeight: '1.4'
+        }}>
+          <strong style={{ display: 'block', marginBottom: '5px' }}>Come si vince?</strong>
+          I <strong>Detective</strong> vincono se raggiungono la stessa esatta posizione del Fuggitivo, "mangiando" la sua pedina. <br/>
+          Il <strong>Fuggitivo</strong> vince se riesce a fuggire e sopravvivere per <strong>24 turni</strong>.
+        </div>
         
         {!joined && isGameInProgress ? (
           <div style={{ textAlign: 'center', marginTop: '30px' }}>
