@@ -31,6 +31,8 @@ function App() {
   const [currentLobbyId, setCurrentLobbyId] = useState(null);
   const [votes, setVotes] = useState({});
   const [endGameVotes, setEndGameVotes] = useState({});
+  const [isDouble, setIsDouble] = useState(false);
+  const [isSecret, setIsSecret] = useState(false);
   const [gameOverData, setGameOverData] = useState(null);
 
   useEffect(() => {
@@ -143,8 +145,15 @@ function App() {
     socket.emit('startGame');
   };
 
-  const handleMove = (targetId, transportType, isDouble = false, isSecret = false) => {
-    socket.emit('move', { targetId, transportType, isDouble, isSecret });
+  const handleMove = (targetId, transportType, doubleOverride, secretOverride) => {
+    socket.emit('move', { 
+      targetId, 
+      transportType, 
+      isDouble: doubleOverride !== undefined ? doubleOverride : isDouble, 
+      isSecret: secretOverride !== undefined ? secretOverride : isSecret 
+    });
+    setIsDouble(false);
+    setIsSecret(false);
   };
 
   const handleSetRole = (role) => {
@@ -196,6 +205,8 @@ function App() {
             myPlayer={myPlayer}
             isMyTurn={isMyTurn}
             onMove={handleMove}
+            isDouble={isDouble}
+            isSecret={isSecret}
           />
           <GameUI 
             myPlayer={myPlayer} 
@@ -223,6 +234,10 @@ function App() {
               onMove={handleMove}
               mapData={maps[selectedMap]}
               specialTickets={myPlayer.specialTickets}
+              isDouble={isDouble}
+              setIsDouble={setIsDouble}
+              isSecret={isSecret}
+              setIsSecret={setIsSecret}
             />
           )}
 

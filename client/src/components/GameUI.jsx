@@ -11,10 +11,12 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap, endG
       if (type === 'car') return '🚶 Piedi';
       if (type === 'train') return '🚲 Bici';
       if (type === 'plane') return '🛵 Motorino';
+      if (type === 'ferry') return '🛶 Barca';
     } else {
       if (type === 'car') return '🚗 Auto';
       if (type === 'train') return '🚂 Treno';
       if (type === 'plane') return '✈️ Aereo';
+      if (type === 'ferry') return '🚢 Traghetto';
     }
     return type;
   };
@@ -106,6 +108,12 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap, endG
             <span>{getTicketName('plane')}:</span>
             <strong>{myPlayer.tickets.plane}</strong>
           </li>
+          {selectedMap === 'italy' && (
+            <li className="ticket-item ferry" style={{ color: '#3b82f6' }}>
+              <span>{getTicketName('ferry')}:</span>
+              <strong>{myPlayer.tickets.ferry}</strong>
+            </li>
+          )}
           {myPlayer.role === 'fugitive' && (
             <li className="ticket-item black">
               <span>Black:</span>

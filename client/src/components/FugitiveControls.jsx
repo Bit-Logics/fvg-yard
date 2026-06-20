@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
-function FugitiveControls({ onMove, mapData, specialTickets }) {
+function FugitiveControls({ onMove, mapData, specialTickets, isDouble, setIsDouble, isSecret, setIsSecret }) {
   const [inputValue, setInputValue] = useState('');
   const [selectedTransport, setSelectedTransport] = useState('car');
-  const [isDouble, setIsDouble] = useState(false);
-  const [isSecret, setIsSecret] = useState(false);
 
   // Autocomplete matching
   const matchingNodes = mapData.nodes
@@ -25,6 +23,7 @@ function FugitiveControls({ onMove, mapData, specialTickets }) {
       case 'car': return '#facc15'; 
       case 'train': return '#ef4444'; 
       case 'plane': return '#a855f7'; 
+      case 'ferry': return '#3b82f6';
       default: return '#fff';
     }
   };
@@ -56,6 +55,10 @@ function FugitiveControls({ onMove, mapData, specialTickets }) {
           onClick={() => setSelectedTransport('plane')}
           style={{ flex: 1, padding: '5px', borderRadius: '5px', border: `2px solid ${getTransportColor('plane')}`, background: selectedTransport === 'plane' ? getTransportColor('plane') : 'transparent', color: selectedTransport === 'plane' ? 'white' : 'black', fontWeight: 'bold', cursor: 'pointer' }}
         >✈️ Aereo</button>
+        <button 
+          onClick={() => setSelectedTransport('ferry')}
+          style={{ flex: 1, padding: '5px', borderRadius: '5px', border: `2px solid ${getTransportColor('ferry')}`, background: selectedTransport === 'ferry' ? getTransportColor('ferry') : 'transparent', color: selectedTransport === 'ferry' ? 'white' : 'black', fontWeight: 'bold', cursor: 'pointer' }}
+        >🚢 Traghetto</button>
       </div>
 
       <div style={{ display: 'flex', gap: '5px' }}>

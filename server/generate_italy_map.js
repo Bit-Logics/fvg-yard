@@ -8,7 +8,35 @@ const newTowns = [
   'Bologna', 'Firenze', 'Bari', 'Catania', 'Venezia', 'Verona', 
   'Padova', 'Trieste', 'Cagliari', 'Sassari', 'Trento', 'Aosta', 
   'Perugia', 'Ancona', 'Pescara', 'L Aquila', 'Campobasso', 
-  'Potenza', 'Catanzaro', 'Reggio Calabria', 'Messina', 'Salerno', 'Lecce'
+  'Potenza', 'Catanzaro', 'Reggio Calabria', 'Messina', 'Salerno', 'Lecce',
+  // Intermediate towns (Mainland)
+  'Novara', 'Piacenza', 'Parma', 'Reggio Emilia', 'Modena',
+  'Sasso Marconi', 'Barberino di Mugello', 'Arezzo', 'Orvieto', 'Viterbo',
+  'Frosinone', 'Cassino', 'Caserta', 'Battipaglia', 'Cosenza',
+  'Rimini', 'Pesaro', 'San Benedetto del Tronto', 'Termoli', 'Foggia',
+  // Mainland empty spots
+  'Cuneo', 'Alessandria', 'Savona', 'La Spezia', 'Siena', 'Grosseto', 'Piombino', 'Livorno', 'Civitavecchia',
+  'Terni', 'Taranto', 'Brindisi', 'Matera', 'Crotone', 'Lamezia Terme',
+  'Bolzano', 'Belluno', 'Udine', 'Treviso',
+  // Sicilia
+  'Enna', 'Caltanissetta', 'Siracusa', 'Agrigento', 'Trapani',
+  'Marsala', 'Gela', 'Ragusa', 'Taormina', 'Cefalu', 'Mazara del Vallo',
+  // Sardegna
+  'Olbia', 'Nuoro', 'Oristano', 'Alghero', 'Porto Torres', 'Iglesias', 'Carbonia',
+  // Corsica & Elba
+  'Bastia, France', 'Ajaccio, France', 'Bonifacio, France', 'Calvi, France', 'Corte, France', 'Porto-Vecchio, France',
+  'Portoferraio',
+  // Ragnatela Towns
+  'Varese', 'Como', 'Bergamo', 'Brescia', 'Cremona', 'Mantova', 'Pavia', 'Lecco', 'Sondrio',
+  'Vicenza', 'Rovigo',
+  'Asti', 'Biella', 'Vercelli',
+  'Ferrara', 'Forli', 'Ravenna',
+  'Lucca', 'Pisa', 'Pistoia', 'Massa', 'Carrara',
+  'Macerata', 'Ascoli Piceno', 'Teramo', 'Chieti', 'Isernia',
+  'Benevento', 'Avellino',
+  'Vibo Valentia',
+  'Barletta', 'Andria', 'Trani',
+  'Caltagirone', 'Sciacca'
 ];
 
 const connections = [
@@ -23,6 +51,9 @@ const connections = [
   { source: 'Palermo', target: 'Catania', type: 'plane' },
   { source: 'Roma', target: 'Cagliari', type: 'plane' },
   { source: 'Cagliari', target: 'Palermo', type: 'plane' },
+  { source: 'Milano', target: 'Olbia', type: 'plane' },
+  { source: 'Olbia', target: 'Bastia, France', type: 'plane' },
+  { source: 'Roma', target: 'Ajaccio, France', type: 'plane' },
 
   // Trains (straight lines for distinction)
   { source: 'Torino', target: 'Milano', type: 'train' },
@@ -47,44 +78,212 @@ const connections = [
   { source: 'Messina', target: 'Palermo', type: 'train' },
   { source: 'Messina', target: 'Catania', type: 'train' },
   { source: 'Cagliari', target: 'Sassari', type: 'train' },
+  { source: 'Sassari', target: 'Olbia', type: 'train' },
+  { source: 'Olbia', target: 'Cagliari', type: 'train' },
+  { source: 'Palermo', target: 'Cefalu', type: 'train' },
+  { source: 'Cefalu', target: 'Messina', type: 'train' },
+  { source: 'Catania', target: 'Siracusa', type: 'train' },
+  { source: 'Siracusa', target: 'Ragusa', type: 'train' },
+  { source: 'Ragusa', target: 'Gela', type: 'train' },
 
-  // Cars (OSRM routing)
+  // Cars (OSRM routing - Dense Network)
   { source: 'Torino', target: 'Aosta', type: 'car' },
-  { source: 'Torino', target: 'Milano', type: 'car' },
+  { source: 'Torino', target: 'Novara', type: 'car' },
+  { source: 'Torino', target: 'Cuneo', type: 'car' },
+  { source: 'Torino', target: 'Alessandria', type: 'car' },
+  { source: 'Novara', target: 'Milano', type: 'car' },
+  { source: 'Cuneo', target: 'Savona', type: 'car' },
+  { source: 'Alessandria', target: 'Genova', type: 'car' },
+  { source: 'Genova', target: 'Savona', type: 'car' },
+  { source: 'Genova', target: 'La Spezia', type: 'car' },
+  { source: 'La Spezia', target: 'Piacenza', type: 'car' },
+  { source: 'La Spezia', target: 'Piombino', type: 'car' },
+  
+  // A4 / A1
+  { source: 'Milano', target: 'Piacenza', type: 'car' },
+  { source: 'Piacenza', target: 'Parma', type: 'car' },
+  { source: 'Parma', target: 'Reggio Emilia', type: 'car' },
+  { source: 'Reggio Emilia', target: 'Modena', type: 'car' },
+  { source: 'Modena', target: 'Bologna', type: 'car' },
+  { source: 'Bologna', target: 'Sasso Marconi', type: 'car' },
+  { source: 'Sasso Marconi', target: 'Barberino di Mugello', type: 'car' },
+  { source: 'Barberino di Mugello', target: 'Firenze', type: 'car' },
+  { source: 'Firenze', target: 'Arezzo', type: 'car' },
+  { source: 'Firenze', target: 'Siena', type: 'car' },
+  { source: 'Firenze', target: 'Livorno', type: 'car' },
+  { source: 'Livorno', target: 'Grosseto', type: 'car' },
+  { source: 'Siena', target: 'Grosseto', type: 'car' },
+  { source: 'Grosseto', target: 'Piombino', type: 'car' },
+  { source: 'Grosseto', target: 'Civitavecchia', type: 'car' },
+  { source: 'Civitavecchia', target: 'Roma', type: 'car' },
+  { source: 'Grosseto', target: 'Viterbo', type: 'car' },
+
+  { source: 'Arezzo', target: 'Perugia', type: 'car' },
+  { source: 'Perugia', target: 'Terni', type: 'car' },
+  { source: 'Terni', target: 'Roma', type: 'car' },
+  { source: 'Perugia', target: 'Orvieto', type: 'car' },
+  { source: 'Orvieto', target: 'Viterbo', type: 'car' },
+  { source: 'Viterbo', target: 'Roma', type: 'car' },
+  { source: 'Roma', target: 'Frosinone', type: 'car' },
+  { source: 'Frosinone', target: 'Cassino', type: 'car' },
+  { source: 'Cassino', target: 'Caserta', type: 'car' },
+  { source: 'Caserta', target: 'Napoli', type: 'car' },
+  { source: 'Napoli', target: 'Salerno', type: 'car' },
+  { source: 'Salerno', target: 'Battipaglia', type: 'car' },
+  { source: 'Battipaglia', target: 'Cosenza', type: 'car' },
+  { source: 'Cosenza', target: 'Lamezia Terme', type: 'car' },
+  { source: 'Lamezia Terme', target: 'Catanzaro', type: 'car' },
+  { source: 'Catanzaro', target: 'Crotone', type: 'car' },
+  { source: 'Catanzaro', target: 'Reggio Calabria', type: 'car' },
+  
+  // Adriatic Coast & South
+  { source: 'Bologna', target: 'Forli', type: 'car' },
+  { source: 'Forli', target: 'Rimini', type: 'car' },
+  { source: 'Rimini', target: 'Pesaro', type: 'car' },
+  { source: 'Pesaro', target: 'Ancona', type: 'car' },
+  { source: 'Ancona', target: 'Macerata', type: 'car' },
+  { source: 'Macerata', target: 'Ascoli Piceno', type: 'car' },
+  { source: 'Ascoli Piceno', target: 'San Benedetto del Tronto', type: 'car' },
+  { source: 'San Benedetto del Tronto', target: 'Teramo', type: 'car' },
+  { source: 'Teramo', target: 'Pescara', type: 'car' },
+  { source: 'Pescara', target: 'Chieti', type: 'car' },
+  { source: 'Chieti', target: 'Termoli', type: 'car' },
+  { source: 'Termoli', target: 'Foggia', type: 'car' },
+  { source: 'Foggia', target: 'Barletta', type: 'car' },
+  { source: 'Barletta', target: 'Andria', type: 'car' },
+  { source: 'Andria', target: 'Trani', type: 'car' },
+  { source: 'Trani', target: 'Bari', type: 'car' },
+  { source: 'Bari', target: 'Brindisi', type: 'car' },
+  { source: 'Brindisi', target: 'Lecce', type: 'car' },
+  { source: 'Lecce', target: 'Taranto', type: 'car' },
+  { source: 'Taranto', target: 'Matera', type: 'car' },
+  { source: 'Matera', target: 'Bari', type: 'car' },
+  { source: 'Matera', target: 'Potenza', type: 'car' },
+  
+  // Campania / Appennini cross
+  { source: 'Napoli', target: 'Avellino', type: 'car' },
+  { source: 'Avellino', target: 'Benevento', type: 'car' },
+  { source: 'Benevento', target: 'Campobasso', type: 'car' },
+  { source: 'Campobasso', target: 'Isernia', type: 'car' },
+  { source: 'Isernia', target: 'Cassino', type: 'car' },
+  { source: 'Benevento', target: 'Foggia', type: 'car' },
+  
+  // Ragnatela: Nord
+  { source: 'Torino', target: 'Asti', type: 'car' },
+  { source: 'Asti', target: 'Alessandria', type: 'car' },
+  { source: 'Torino', target: 'Biella', type: 'car' },
+  { source: 'Biella', target: 'Vercelli', type: 'car' },
+  { source: 'Vercelli', target: 'Novara', type: 'car' },
+  { source: 'Milano', target: 'Varese', type: 'car' },
+  { source: 'Varese', target: 'Como', type: 'car' },
+  { source: 'Como', target: 'Lecco', type: 'car' },
+  { source: 'Lecco', target: 'Sondrio', type: 'car' },
+  { source: 'Milano', target: 'Pavia', type: 'car' },
+  { source: 'Pavia', target: 'Piacenza', type: 'car' },
+  { source: 'Milano', target: 'Bergamo', type: 'car' },
+  { source: 'Bergamo', target: 'Brescia', type: 'car' },
+  { source: 'Brescia', target: 'Verona', type: 'car' },
+  { source: 'Piacenza', target: 'Cremona', type: 'car' },
+  { source: 'Cremona', target: 'Mantova', type: 'car' },
+  { source: 'Mantova', target: 'Verona', type: 'car' },
+  { source: 'Mantova', target: 'Rovigo', type: 'car' },
+  { source: 'Rovigo', target: 'Ferrara', type: 'car' },
+  { source: 'Ferrara', target: 'Bologna', type: 'car' },
+  { source: 'Ferrara', target: 'Ravenna', type: 'car' },
+  { source: 'Ravenna', target: 'Forli', type: 'car' },
+  { source: 'Verona', target: 'Vicenza', type: 'car' },
+  { source: 'Vicenza', target: 'Padova', type: 'car' },
+  
+  // Ragnatela: Centro
+  { source: 'La Spezia', target: 'Carrara', type: 'car' },
+  { source: 'Carrara', target: 'Massa', type: 'car' },
+  { source: 'Massa', target: 'Lucca', type: 'car' },
+  { source: 'Lucca', target: 'Pisa', type: 'car' },
+  { source: 'Pisa', target: 'Livorno', type: 'car' },
+  { source: 'Lucca', target: 'Firenze', type: 'car' },
+  { source: 'Firenze', target: 'Pistoia', type: 'car' },
+  { source: 'Pistoia', target: 'Lucca', type: 'car' },
+  { source: 'Siena', target: 'Perugia', type: 'car' },
+  
+  // Calabria & Sicilia Cross
+  { source: 'Lamezia Terme', target: 'Vibo Valentia', type: 'car' },
+  { source: 'Vibo Valentia', target: 'Reggio Calabria', type: 'car' },
+  { source: 'Catania', target: 'Caltagirone', type: 'car' },
+  { source: 'Caltagirone', target: 'Gela', type: 'car' },
+  { source: 'Agrigento', target: 'Sciacca', type: 'car' },
+  { source: 'Sciacca', target: 'Mazara del Vallo', type: 'car' },
+  
+  // North-East
+  { source: 'Verona', target: 'Bolzano', type: 'car' },
+  { source: 'Bolzano', target: 'Trento', type: 'car' },
+  { source: 'Venezia', target: 'Treviso', type: 'car' },
+  { source: 'Treviso', target: 'Belluno', type: 'car' },
+  { source: 'Treviso', target: 'Udine', type: 'car' },
+  { source: 'Udine', target: 'Trieste', type: 'car' },
+  
+  // Other connections
   { source: 'Milano', target: 'Verona', type: 'car' },
   { source: 'Verona', target: 'Padova', type: 'car' },
   { source: 'Padova', target: 'Venezia', type: 'car' },
-  { source: 'Venezia', target: 'Trieste', type: 'car' },
-  { source: 'Verona', target: 'Trento', type: 'car' },
-  { source: 'Milano', target: 'Genova', type: 'car' },
-  { source: 'Torino', target: 'Genova', type: 'car' },
-  { source: 'Genova', target: 'Firenze', type: 'car' },
-  { source: 'Milano', target: 'Bologna', type: 'car' },
-  { source: 'Bologna', target: 'Firenze', type: 'car' },
-  { source: 'Firenze', target: 'Roma', type: 'car' },
-  { source: 'Roma', target: 'Napoli', type: 'car' },
-  { source: 'Napoli', target: 'Salerno', type: 'car' },
-  { source: 'Salerno', target: 'Potenza', type: 'car' },
-  { source: 'Salerno', target: 'Catanzaro', type: 'car' },
-  { source: 'Catanzaro', target: 'Reggio Calabria', type: 'car' },
-  { source: 'Bologna', target: 'Ancona', type: 'car' },
-  { source: 'Ancona', target: 'Pescara', type: 'car' },
-  { source: 'Pescara', target: 'Bari', type: 'car' },
-  { source: 'Bari', target: 'Lecce', type: 'car' },
-  { source: 'Firenze', target: 'Perugia', type: 'car' },
-  { source: 'Perugia', target: 'Roma', type: 'car' },
   { source: 'Roma', target: 'L Aquila', type: 'car' },
   { source: 'L Aquila', target: 'Pescara', type: 'car' },
   { source: 'Napoli', target: 'Campobasso', type: 'car' },
-  { source: 'Campobasso', target: 'Pescara', type: 'car' },
-  { source: 'Messina', target: 'Catania', type: 'car' },
-  { source: 'Catania', target: 'Palermo', type: 'car' },
-  { source: 'Messina', target: 'Palermo', type: 'car' },
-  { source: 'Cagliari', target: 'Sassari', type: 'car' }
+  { source: 'Campobasso', target: 'Foggia', type: 'car' },
+  { source: 'Salerno', target: 'Potenza', type: 'car' },
+  
+  // Sicilia
+  { source: 'Messina', target: 'Taormina', type: 'car' },
+  { source: 'Taormina', target: 'Catania', type: 'car' },
+  { source: 'Catania', target: 'Siracusa', type: 'car' },
+  { source: 'Siracusa', target: 'Noto', type: 'car' },
+  { source: 'Noto', target: 'Ragusa', type: 'car' },
+  { source: 'Ragusa', target: 'Gela', type: 'car' },
+  { source: 'Gela', target: 'Agrigento', type: 'car' },
+  { source: 'Agrigento', target: 'Mazara del Vallo', type: 'car' },
+  { source: 'Mazara del Vallo', target: 'Marsala', type: 'car' },
+  { source: 'Marsala', target: 'Trapani', type: 'car' },
+  { source: 'Trapani', target: 'Palermo', type: 'car' },
+  { source: 'Palermo', target: 'Cefalu', type: 'car' },
+  { source: 'Cefalu', target: 'Messina', type: 'car' },
+  { source: 'Catania', target: 'Enna', type: 'car' },
+  { source: 'Enna', target: 'Caltanissetta', type: 'car' },
+  { source: 'Caltanissetta', target: 'Agrigento', type: 'car' },
+  { source: 'Palermo', target: 'Enna', type: 'car' },
+
+  // Sardegna
+  { source: 'Cagliari', target: 'Villasimius', type: 'car' },
+  { source: 'Cagliari', target: 'Carbonia', type: 'car' },
+  { source: 'Carbonia', target: 'Iglesias', type: 'car' },
+  { source: 'Iglesias', target: 'Oristano', type: 'car' },
+  { source: 'Cagliari', target: 'Oristano', type: 'car' },
+  { source: 'Oristano', target: 'Nuoro', type: 'car' },
+  { source: 'Oristano', target: 'Alghero', type: 'car' },
+  { source: 'Alghero', target: 'Sassari', type: 'car' },
+  { source: 'Sassari', target: 'Porto Torres', type: 'car' },
+  { source: 'Sassari', target: 'Olbia', type: 'car' },
+  { source: 'Nuoro', target: 'Olbia', type: 'car' },
+  
+  // Corsica & Ferries
+  { source: 'Bastia, France', target: 'Corte, France', type: 'car' },
+  { source: 'Corte, France', target: 'Ajaccio, France', type: 'car' },
+  { source: 'Ajaccio, France', target: 'Bonifacio, France', type: 'car' },
+  { source: 'Bastia, France', target: 'Calvi, France', type: 'car' },
+  { source: 'Bastia, France', target: 'Porto-Vecchio, France', type: 'car' },
+  { source: 'Porto-Vecchio, France', target: 'Bonifacio, France', type: 'car' },
+  { source: 'Ajaccio, France', target: 'Calvi, France', type: 'car' },
+  
+  // Ferries
+  { source: 'Piombino', target: 'Portoferraio', type: 'ferry' },
+  { source: 'Livorno', target: 'Bastia, France', type: 'ferry' },
+  { source: 'Bonifacio, France', target: 'Porto Torres', type: 'ferry' },
+  { source: 'Piombino', target: 'Bastia, France', type: 'ferry' },
+  { source: 'Genova', target: 'Bastia, France', type: 'ferry' },
+  { source: 'Napoli', target: 'Palermo', type: 'ferry' },
+  { source: 'Civitavecchia', target: 'Olbia', type: 'ferry' }
 ];
 
 async function geocode(townName) {
-  const query = `${townName}, Italy`;
+  const query = townName.includes(',') ? townName : `${townName}, Italy`;
   return new Promise((resolve, reject) => {
     https.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
       headers: { 'User-Agent': 'MisterXMapGen/1.0' }
@@ -182,7 +381,7 @@ async function run() {
     
     if (sourceNode && targetNode) {
       let geometry = [];
-      if (conn.type === 'car' || conn.type === 'train') {
+      if (conn.type === 'car' || conn.type === 'train' || conn.type === 'ferry') {
         await new Promise(r => setTimeout(r, 200));
         geometry = await getRouteGeometry(sourceNode, targetNode);
       } else if (conn.type === 'plane') {

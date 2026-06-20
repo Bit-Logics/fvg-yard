@@ -13,7 +13,8 @@ const REVEAL_TURNS = [3, 8, 13, 18, 24];
 const STARTING_TICKETS = {
   car: 10,
   train: 8,
-  plane: 4
+  plane: 4,
+  ferry: 3
 };
 
 let io;
@@ -182,7 +183,7 @@ function init(socketIo) {
       playerList.forEach(p => {
         p.history = [];
         if (p.role === 'fugitive') {
-          p.tickets = { car: '∞', train: '∞', plane: '∞' };
+          p.tickets = { car: '∞', train: '∞', plane: '∞', ferry: '∞' };
           p.specialTickets = { double: 3, secret: 3 };
         } else {
           p.tickets = { ...STARTING_TICKETS };
@@ -256,7 +257,7 @@ function init(socketIo) {
       isDouble = !!isDouble;
       isSecret = !!isSecret;
       
-      if (!['car', 'train', 'plane'].includes(transportType)) {
+      if (!['car', 'train', 'plane', 'ferry'].includes(transportType)) {
         socket.emit('errorMsg', 'Mezzo non valido');
         return;
       }

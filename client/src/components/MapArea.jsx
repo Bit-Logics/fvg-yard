@@ -108,6 +108,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
       case 'car': return '#facc15';
       case 'train': return '#ef4444';
       case 'plane': return '#a855f7';
+      case 'ferry': return '#3b82f6'; // Blue for ferry
       default: return '#fff';
     }
   };
@@ -145,7 +146,8 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
     return {
       carGeojson: buildCollection('car'),
       trainGeojson: buildCollection('train'),
-      planeGeojson: buildCollection('plane')
+      planeGeojson: buildCollection('plane'),
+      ferryGeojson: buildCollection('ferry')
     };
   }, [mapData]);
 
@@ -227,6 +229,26 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
         >
           {selectedMap === 'porpetto' ? '🛵 Motorino' : '✈️ Aereo'}
         </button>
+
+        {/* Ferry Button (Only Italy) */}
+        {selectedMap === 'italy' && (
+          <button 
+            onClick={() => { SoundEngine.playClick(); setSelectedTransport('ferry'); }}
+            style={{
+              background: selectedTransport === 'ferry' ? getTransportColor('ferry') : 'transparent',
+              color: selectedTransport === 'ferry' ? 'white' : 'var(--text-primary)',
+              border: `2px solid ${getTransportColor('ferry')}`,
+              padding: '6px 12px',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              fontSize: '14px'
+            }}
+          >
+            🚢 Traghetto
+          </button>
+        )}
       </div>
 
       <Map
@@ -283,6 +305,20 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           />
         </Source>
 
+        {/* Ferry Links Layer */}
+        <Source id="ferry-routes" type="geojson" data={ferryGeojson}>
+          <Layer 
+            id="ferry-lines" 
+            type="line" 
+            paint={{
+              'line-color': getTransportColor('ferry'),
+              'line-width': 5,
+              'line-opacity': 0.8,
+              'line-dasharray': [3, 3]
+            }} 
+          />
+        </Source>
+
         {/* Draw Nodes */}
         {mapData.nodes.map((node, index) => {
           const nodeNum = index + 1;
@@ -296,6 +332,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'car')) types.push('car');
           if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'train')) types.push('train');
           if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'plane')) types.push('plane');
+          if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'ferry')) types.push('ferry');
 
           let backgroundStyle = 'white';
           if (types.length === 1) {
