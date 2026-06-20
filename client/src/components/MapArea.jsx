@@ -53,6 +53,7 @@ const OSM_STYLE = {
 
 function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) {
   const [selectedTransport, setSelectedTransport] = useState('car');
+  const [showAllTrajectories, setShowAllTrajectories] = useState(false);
   const [viewState, setViewState] = useState({
     longitude: 13.1,
     latitude: 46.0,
@@ -60,6 +61,19 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
     pitch: 0,
     bearing: 0
   });
+
+  const availableTransports = useMemo(() => {
+    if (!myPlayer || !myPlayer.location || !mapData || !mapData.links) return ['car', 'train', 'plane', 'ferry'];
+    const nodeLinks = mapData.links.filter(l => l.source === myPlayer.location || l.target === myPlayer.location);
+    if (nodeLinks.length === 0) return ['car', 'train', 'plane', 'ferry'];
+    return Array.from(new Set(nodeLinks.map(l => l.type)));
+  }, [mapData, myPlayer]);
+
+  React.useEffect(() => {
+    if (availableTransports.length > 0 && !availableTransports.includes(selectedTransport)) {
+      setSelectedTransport(availableTransports[0]);
+    }
+  }, [availableTransports, selectedTransport]);
 
   React.useEffect(() => {
     if (selectedMap === 'italy') {
@@ -186,10 +200,12 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
             padding: '6px 12px',
             borderRadius: '8px',
             fontWeight: 'bold',
-            cursor: 'pointer',
+            cursor: availableTransports.includes('car') ? 'pointer' : 'not-allowed',
+            opacity: availableTransports.includes('car') ? 1 : 0.3,
             transition: 'all 0.2s',
             fontSize: '14px'
           }}
+          disabled={!availableTransports.includes('car')}
         >
           {selectedMap === 'porpetto' ? '🚶 A Piedi' : '🚗 Auto'}
         </button>
@@ -204,10 +220,12 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
             padding: '6px 12px',
             borderRadius: '8px',
             fontWeight: 'bold',
-            cursor: 'pointer',
+            cursor: availableTransports.includes('train') ? 'pointer' : 'not-allowed',
+            opacity: availableTransports.includes('train') ? 1 : 0.3,
             transition: 'all 0.2s',
             fontSize: '14px'
           }}
+          disabled={!availableTransports.includes('train')}
         >
           {selectedMap === 'porpetto' ? '🚲 In Bici' : '🚂 Treno'}
         </button>
@@ -222,10 +240,12 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
             padding: '6px 12px',
             borderRadius: '8px',
             fontWeight: 'bold',
-            cursor: 'pointer',
+            cursor: availableTransports.includes('plane') ? 'pointer' : 'not-allowed',
+            opacity: availableTransports.includes('plane') ? 1 : 0.3,
             transition: 'all 0.2s',
             fontSize: '14px'
           }}
+          disabled={!availableTransports.includes('plane')}
         >
           {selectedMap === 'porpetto' ? '🛵 Motorino' : '✈️ Aereo'}
         </button>
@@ -241,14 +261,36 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
               padding: '6px 12px',
               borderRadius: '8px',
               fontWeight: 'bold',
-              cursor: 'pointer',
+              cursor: availableTransports.includes('ferry') ? 'pointer' : 'not-allowed',
+              opacity: availableTransports.includes('ferry') ? 1 : 0.3,
               transition: 'all 0.2s',
               fontSize: '14px'
             }}
+            disabled={!availableTransports.includes('ferry')}
           >
             🚢 Traghetto
           </button>
         )}
+
+        <div style={{ marginTop: '5px', borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '10px' }}>
+          <button 
+            onClick={() => { SoundEngine.playClick(); setShowAllTrajectories(!showAllTrajectories); }}
+            style={{
+              background: showAllTrajectories ? '#10b981' : 'transparent',
+              color: showAllTrajectories ? 'white' : 'var(--text-primary)',
+              border: `2px solid #10b981`,
+              padding: '6px 12px',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              fontSize: '12px',
+              width: '100%'
+            }}
+          >
+            {showAllTrajectories ? '👀 Tutte Attive' : '👁️ Mostra Tutte'}
+          </button>
+        </div>
       </div>
 
       <Map
@@ -267,7 +309,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="car-lines" 
             type="line" 
-            layout={{ visibility: selectedTransport === 'car' ? 'visible' : 'none' }}
+            layout={{ visibility: (showAllTrajectories || selectedTransport === 'car') ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('car'),
               'line-width': 6,
@@ -281,7 +323,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="train-lines" 
             type="line" 
-            layout={{ visibility: selectedTransport === 'train' ? 'visible' : 'none' }}
+            layout={{ visibility: (showAllTrajectories || selectedTransport === 'train') ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('train'),
               'line-width': 6,
@@ -297,7 +339,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="plane-lines" 
             type="line" 
-            layout={{ visibility: selectedTransport === 'plane' ? 'visible' : 'none' }}
+            layout={{ visibility: (showAllTrajectories || selectedTransport === 'plane') ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('plane'),
               'line-width': 5,
@@ -313,7 +355,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
           <Layer 
             id="ferry-lines" 
             type="line" 
-            layout={{ visibility: selectedTransport === 'ferry' ? 'visible' : 'none' }}
+            layout={{ visibility: (showAllTrajectories || selectedTransport === 'ferry') ? 'visible' : 'none' }}
             paint={{
               'line-color': getTransportColor('ferry'),
               'line-width': 5,
