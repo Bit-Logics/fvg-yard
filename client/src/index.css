@@ -1,6 +1,6 @@
 :root {
-  --bg-color: #f7f5f0; /* Avorio */
-  --panel-bg: rgba(255, 255, 255, 0.95); /* Bianco puro per staccare dal fondo avorio/mappa */
+  --bg-color: #e5ded2; /* Sabbia più scura per creare contrasto */
+  --panel-bg: #fdf8f1; /* Beige chiarissimo (quasi bianco) per le card */
   --panel-border: #b8791a; /* Bordo Ocra per forte contrasto e stile */
   --text-primary: #12151f;
   --text-secondary: #5a5f70;
@@ -15,13 +15,13 @@
   --ticket-plane: #a855f7;
   --ticket-black: #12151f;
   
-  --node-color: #f7f5f0;
+  --node-color: #fdf8f1;
   --node-border: #12151f;
   --route-car: #facc15;
   --route-train: #ef4444;
   --route-plane: #a855f7;
   
-  --map-bg-brightness: 1;
+  --map-bg-brightness: 0.85; /* Abbassa luminosità mappa per far risaltare i pannelli */
 }
 
 [data-theme='dark'] {

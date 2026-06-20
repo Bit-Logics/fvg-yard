@@ -5,7 +5,11 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: #000;
+  background-color: var(--bg-color);
+}
+
+.map-area .maplibregl-map {
+  filter: brightness(var(--map-bg-brightness)) sepia(0.2);
 }
 
 .transport-selector {
