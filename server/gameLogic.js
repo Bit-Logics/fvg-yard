@@ -220,6 +220,30 @@ function init(socketIo) {
       }
       broadcastState(socket.lobbyId);
     });
+
+    socket.on('resetLobby', () => {
+      const lobby = LOBBIES[socket.lobbyId];
+      if (!lobby || lobby.gameState !== 'finished') return;
+      
+      lobby.gameState = 'lobby';
+      
+      // Reset players state but keep them in the lobby
+      Object.keys(lobby.players).forEach(pid => {
+        const p = lobby.players[pid];
+        p.role = null;
+        p.location = null;
+        p.history = [];
+        p.tickets = {};
+        p.specialTickets = {};
+      });
+      
+      lobby.turnOrder = [];
+      lobby.currentTurnIndex = 0;
+      lobby.endGameVotes = {};
+      
+      broadcastState(socket.lobbyId);
+      broadcastLobbiesMeta();
+    });
     
     socket.on('move', (data) => {
       const lobby = LOBBIES[socket.lobbyId];

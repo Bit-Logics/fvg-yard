@@ -20,19 +20,19 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap }) {
 
   return (
     <div className="game-ui-overlay">
-      <div className="top-bar glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px', width: '100%' }}>
+      <div className="top-bar glass-panel" style={{ display: 'flex', gap: '20px', alignItems: 'center', padding: '10px 30px', alignSelf: 'center' }}>
         
         {/* Left: Player Name */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: myPlayer.color !== '#111' ? myPlayer.color : 'var(--text-primary)' }} />
-          <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: myPlayer.color !== '#111' ? myPlayer.color : 'var(--text-primary)' }}>
+          <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: myPlayer.color !== '#111' ? myPlayer.color : 'var(--text-primary)', whiteSpace: 'nowrap' }}>
             {myPlayer.name} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{myPlayer.role === 'fugitive' ? '(Mister X)' : '(Detective)'}</span>
           </div>
         </div>
 
         {/* Center: Turn Info & Timer */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px' }}>
-          <div className="turn-info">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', borderLeft: '1px solid var(--panel-border)', borderRight: '1px solid var(--panel-border)', padding: '0 20px' }}>
+          <div className="turn-info" style={{ whiteSpace: 'nowrap' }}>
             {isMyTurn ? (
               <span className="my-turn">È il tuo turno!</span>
             ) : (
@@ -45,9 +45,9 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap }) {
         </div>
 
         {/* Right: Position */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>POSIZIONE:</div>
-          <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{myPlayer.location || 'Nascosta'}</div>
+          <div style={{ fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap' }}>{myPlayer.location || 'Nascosta'}</div>
         </div>
 
       </div>

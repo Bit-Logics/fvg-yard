@@ -31,6 +31,7 @@ function App() {
   const [currentLobbyId, setCurrentLobbyId] = useState(null);
   const [votes, setVotes] = useState({});
   const [endGameVotes, setEndGameVotes] = useState({});
+  const [gameOverData, setGameOverData] = useState(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -80,6 +81,9 @@ function App() {
 
     socket.on('gameState', (state) => {
       setGameState(state.gameState);
+      if (state.gameState === 'lobby') {
+        setGameOverData(null);
+      }
       setPlayers(state.players);
       setTurnOrder(state.turnOrder);
       setCurrentTurnIndex(state.currentTurnIndex);
@@ -104,7 +108,7 @@ function App() {
     });
 
     socket.on('gameOver', ({ winner, reason }) => {
-      alert(`Game Over! ${winner} wins! Reason: ${reason}`);
+      setGameOverData({ winner, reason });
     });
 
     return () => {
@@ -167,9 +171,10 @@ function App() {
             title="Vota per terminare la partita in anticipo"
           >
             <Flag size={20} />
+            <span style={{ fontWeight: 'bold' }}>Resa</span>
             {Object.keys(endGameVotes).length > 0 && (
-              <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
-                {Object.keys(endGameVotes).length}/{Object.keys(players).length}
+              <span style={{ fontSize: '0.8rem', fontWeight: 'bold', marginLeft: '5px' }}>
+                ({Object.keys(endGameVotes).length}/{Object.keys(players).length})
               </span>
             )}
           </button>
@@ -185,7 +190,7 @@ function App() {
         </div>
       )}
 
-      {(gameState === 'lobby' || (gameState === 'playing' && !myPlayer)) && (
+      {(gameState === 'lobby' || ((gameState === 'playing' || gameState === 'finished') && !myPlayer)) && (
         <Lobby 
           players={players} 
           onJoin={handleJoin} 
@@ -193,7 +198,7 @@ function App() {
           myId={socket.id}
           onSetRole={handleSetRole}
           onDraw={() => socket.emit('drawCard')}
-          isGameInProgress={gameState === 'playing'}
+          isGameInProgress={gameState !== 'lobby'}
           lobbies={lobbies}
           currentLobbyId={currentLobbyId}
           onSwitchLobby={handleSwitchLobby}
@@ -234,6 +239,24 @@ function App() {
               mapData={maps[selectedMap]}
               specialTickets={myPlayer.specialTickets}
             />
+          )}
+
+          {gameOverData && (
+            <div className="game-ui-overlay" style={{ backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 9999, justifyContent: 'center', alignItems: 'center', pointerEvents: 'auto' }}>
+              <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', maxWidth: '500px', width: '90%' }}>
+                <h1 style={{ fontSize: '2.5rem', marginBottom: '10px', color: 'var(--primary-color)' }}>Partita Terminata</h1>
+                <h2 style={{ marginBottom: '20px' }}>
+                  {gameOverData.winner === 'detectives' ? 'I Detective Vincono!' : 
+                   gameOverData.winner === 'fugitive' ? 'Mister X Vince!' : 
+                   'Pareggio!'}
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '30px', fontSize: '1.2rem' }}>{gameOverData.reason}</p>
+                <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                  <button className="btn" onClick={() => setGameOverData(null)} style={{ flex: 1 }}>Torna alla Mappa</button>
+                  <button className="btn start-btn" onClick={() => socket.emit('resetLobby')} style={{ flex: 1 }}>Torna alla Lobby</button>
+                </div>
+              </div>
+            </div>
           )}
         </>
       )}
