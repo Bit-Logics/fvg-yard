@@ -10,8 +10,8 @@ const PORPETTO_BOUNDS = [
 ];
 
 const ITALY_BOUNDS = [
-  [6.5, 35.5], // Southwest coordinates
-  [19.0, 47.5]  // Northeast coordinates
+  [-10.0, 30.0], // Southwest coordinates (Atlantic/Africa)
+  [30.0, 55.0]  // Northeast coordinates (Eastern Europe)
 ];
 
 const FVG_BOUNDS = [
@@ -236,7 +236,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
         style={{ width: '100%', height: '100%' }}
         maxPitch={60}
         maxBounds={selectedMap === 'italy' ? ITALY_BOUNDS : (selectedMap === 'porpetto' ? PORPETTO_BOUNDS : FVG_BOUNDS)}
-        minZoom={selectedMap === 'italy' ? 4 : (selectedMap === 'porpetto' ? 14 : 5)}
+        minZoom={selectedMap === 'italy' ? 2 : (selectedMap === 'porpetto' ? 14 : 5)}
       >
         <NavigationControl position="bottom-right" />
 
