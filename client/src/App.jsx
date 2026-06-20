@@ -24,7 +24,7 @@ function App() {
   const [turnOrder, setTurnOrder] = useState([]);
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [maps, setMaps] = useState({ friuli: null, italy: null });
+  const [maps, setMaps] = useState({ friuli: null, italy: null, porpetto: null });
   const [selectedMap, setSelectedMap] = useState('friuli');
   const [lobbies, setLobbies] = useState([]);
   const [currentLobbyId, setCurrentLobbyId] = useState('lobby1');
@@ -35,12 +35,13 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    // Fetch both maps
+    // Fetch all maps
     Promise.all([
       fetch('/map/friuli').then(res => res.json()),
-      fetch('/map/italy').then(res => res.json())
+      fetch('/map/italy').then(res => res.json()),
+      fetch('/map/porpetto').then(res => res.json())
     ])
-    .then(([f, i]) => setMaps({ friuli: f, italy: i }))
+    .then(([f, i, p]) => setMaps({ friuli: f, italy: i, porpetto: p }))
     .catch(err => console.error("Failed to load maps", err));
 
     socket.on('gameState', (state) => {
@@ -160,6 +161,7 @@ function App() {
             timeLeft={timeLeft} 
             isMyTurn={isMyTurn}
             currentPlayer={currentPlayer}
+            selectedMap={selectedMap}
           />
           
           {fugitivePlayer && (

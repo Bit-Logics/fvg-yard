@@ -1,0 +1,405 @@
+{
+  "nodes": [
+    {
+      "id": "Municipio",
+      "lat": 45.859,
+      "lng": 13.213
+    },
+    {
+      "id": "Chiesa",
+      "lat": 45.858,
+      "lng": 13.212
+    },
+    {
+      "id": "Bar Centrale",
+      "lat": 45.857,
+      "lng": 13.214
+    },
+    {
+      "id": "Ristorante",
+      "lat": 45.86,
+      "lng": 13.211
+    },
+    {
+      "id": "Campo Sportivo",
+      "lat": 45.861,
+      "lng": 13.215
+    },
+    {
+      "id": "Palude Fraghis",
+      "lat": 45.845,
+      "lng": 13.22
+    },
+    {
+      "id": "Cimitero",
+      "lat": 45.853,
+      "lng": 13.21
+    },
+    {
+      "id": "Castello di Pampaluna",
+      "lat": 45.85,
+      "lng": 13.23
+    },
+    {
+      "id": "Scuole",
+      "lat": 45.8585,
+      "lng": 13.216
+    },
+    {
+      "id": "Stazione FS",
+      "lat": 45.865,
+      "lng": 13.21
+    },
+    {
+      "id": "Supermercato",
+      "lat": 45.862,
+      "lng": 13.218
+    },
+    {
+      "id": "Farmacia",
+      "lat": 45.8575,
+      "lng": 13.2135
+    },
+    {
+      "id": "Parco Pubblico",
+      "lat": 45.856,
+      "lng": 13.215
+    },
+    {
+      "id": "Zona Industriale",
+      "lat": 45.87,
+      "lng": 13.205
+    },
+    {
+      "id": "Fiume Corno",
+      "lat": 45.855,
+      "lng": 13.208
+    },
+    {
+      "id": "Chiosco",
+      "lat": 45.854,
+      "lng": 13.214
+    },
+    {
+      "id": "Poste",
+      "lat": 45.8595,
+      "lng": 13.214
+    },
+    {
+      "id": "Banca",
+      "lat": 45.8582,
+      "lng": 13.2125
+    },
+    {
+      "id": "Panetteria",
+      "lat": 45.8588,
+      "lng": 13.2132
+    },
+    {
+      "id": "Macelleria",
+      "lat": 45.8578,
+      "lng": 13.2128
+    },
+    {
+      "id": "Edicola",
+      "lat": 45.8584,
+      "lng": 13.2122
+    },
+    {
+      "id": "Pala",
+      "lat": 45.8592,
+      "lng": 13.2125
+    },
+    {
+      "id": "Piazza",
+      "lat": 45.8585,
+      "lng": 13.2135
+    },
+    {
+      "id": "Monumento",
+      "lat": 45.8575,
+      "lng": 13.2145
+    },
+    {
+      "id": "Fioreria",
+      "lat": 45.8581,
+      "lng": 13.2141
+    },
+    {
+      "id": "Gelateria",
+      "lat": 45.8593,
+      "lng": 13.2115
+    },
+    {
+      "id": "Asilo",
+      "lat": 45.858,
+      "lng": 13.2155
+    }
+  ],
+  "links": [
+    {
+      "source": "Municipio",
+      "target": "Pala",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Pala",
+      "target": "Panetteria",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Pala",
+      "target": "Banca",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Panetteria",
+      "target": "Poste",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Municipio",
+      "target": "Piazza",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Piazza",
+      "target": "Fioreria",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Piazza",
+      "target": "Edicola",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Fioreria",
+      "target": "Monumento",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Monumento",
+      "target": "Bar Centrale",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Edicola",
+      "target": "Chiesa",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Chiesa",
+      "target": "Banca",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Chiesa",
+      "target": "Macelleria",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Macelleria",
+      "target": "Farmacia",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Farmacia",
+      "target": "Asilo",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Asilo",
+      "target": "Scuole",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Scuole",
+      "target": "Piazza",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Municipio",
+      "target": "Gelateria",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Gelateria",
+      "target": "Ristorante",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Bar Centrale",
+      "target": "Parco Pubblico",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Parco Pubblico",
+      "target": "Chiosco",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Chiosco",
+      "target": "Cimitero",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Chiesa",
+      "target": "Fiume Corno",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Poste",
+      "target": "Scuole",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Scuole",
+      "target": "Campo Sportivo",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Campo Sportivo",
+      "target": "Supermercato",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Ristorante",
+      "target": "Municipio",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Fiume Corno",
+      "target": "Cimitero",
+      "type": "car",
+      "geometry": []
+    },
+    {
+      "source": "Piazza",
+      "target": "Campo Sportivo",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Chiesa",
+      "target": "Cimitero",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Ristorante",
+      "target": "Stazione FS",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Stazione FS",
+      "target": "Zona Industriale",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Supermercato",
+      "target": "Zona Industriale",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Parco Pubblico",
+      "target": "Castello di Pampaluna",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Cimitero",
+      "target": "Palude Fraghis",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Fiume Corno",
+      "target": "Ristorante",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Municipio",
+      "target": "Supermercato",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Asilo",
+      "target": "Supermercato",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Campo Sportivo",
+      "target": "Palude Fraghis",
+      "type": "train",
+      "geometry": []
+    },
+    {
+      "source": "Bar Centrale",
+      "target": "Stazione FS",
+      "type": "plane",
+      "geometry": []
+    },
+    {
+      "source": "Stazione FS",
+      "target": "Zona Industriale",
+      "type": "plane",
+      "geometry": []
+    },
+    {
+      "source": "Zona Industriale",
+      "target": "Castello di Pampaluna",
+      "type": "plane",
+      "geometry": []
+    },
+    {
+      "source": "Pala",
+      "target": "Castello di Pampaluna",
+      "type": "plane",
+      "geometry": []
+    },
+    {
+      "source": "Pala",
+      "target": "Zona Industriale",
+      "type": "plane",
+      "geometry": []
+    },
+    {
+      "source": "Municipio",
+      "target": "Stazione FS",
+      "type": "plane",
+      "geometry": []
+    }
+  ]
+}

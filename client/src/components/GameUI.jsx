@@ -1,8 +1,22 @@
 import React from 'react';
 import './GameUI.css';
 
-function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer }) {
+function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap }) {
   if (!myPlayer) return null;
+
+  const isPorpetto = selectedMap === 'porpetto';
+  const getTicketName = (type) => {
+    if (isPorpetto) {
+      if (type === 'car') return '🚶 Piedi';
+      if (type === 'train') return '🚲 Bici';
+      if (type === 'plane') return '🛵 Motorino';
+    } else {
+      if (type === 'car') return '🚗 Auto';
+      if (type === 'train') return '🚂 Treno';
+      if (type === 'plane') return '✈️ Aereo';
+    }
+    return type;
+  };
 
   return (
     <div className="game-ui-overlay">
@@ -32,15 +46,15 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer }) {
         <h3>I tuoi Biglietti</h3>
         <ul className="tickets-list">
           <li className="ticket-item car">
-            <span>Auto:</span>
+            <span>{getTicketName('car')}:</span>
             <strong>{myPlayer.tickets.car}</strong>
           </li>
           <li className="ticket-item train">
-            <span>Treno:</span>
+            <span>{getTicketName('train')}:</span>
             <strong>{myPlayer.tickets.train}</strong>
           </li>
           <li className="ticket-item plane">
-            <span>Aereo:</span>
+            <span>{getTicketName('plane')}:</span>
             <strong>{myPlayer.tickets.plane}</strong>
           </li>
           {myPlayer.role === 'fugitive' && (

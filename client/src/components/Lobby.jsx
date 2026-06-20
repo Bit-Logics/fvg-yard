@@ -181,7 +181,7 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
                 >
                   <div>Friuli-VG</div>
                   <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
-                    {Object.values(votes || {}).filter(v => v !== 'italy').length + (playersList.length - Object.values(votes || {}).length)}
+                    {Object.values(votes || {}).filter(v => v !== 'italy' && v !== 'porpetto').length + (playersList.length - Object.values(votes || {}).length)}
                   </div>
                 </button>
                 <button 
@@ -195,6 +195,19 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
                   <div>Italia Intera</div>
                   <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
                     {Object.values(votes || {}).filter(v => v === 'italy').length}
+                  </div>
+                </button>
+                <button 
+                  onClick={() => onVoteMap('porpetto')}
+                  style={{ 
+                    flex: 1, padding: '10px', borderRadius: '6px', 
+                    border: votes && votes[myId] === 'porpetto' ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
+                    backgroundColor: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.2s' 
+                  }}
+                >
+                  <div>Porpetto</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
+                    {Object.values(votes || {}).filter(v => v === 'porpetto').length}
                   </div>
                 </button>
               </div>

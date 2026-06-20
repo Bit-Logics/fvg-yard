@@ -1,8 +1,10 @@
 const mapDataFriuli = require('./mapData.json');
 const mapDataItaly = require('./mapDataItaly.json');
+const mapDataPorpetto = require('./mapDataPorpetto.json');
 const MAPS = {
   friuli: mapDataFriuli,
-  italy: mapDataItaly
+  italy: mapDataItaly,
+  porpetto: mapDataPorpetto
 };
 
 const TURN_TIME_MS = 60000; // 60 seconds
@@ -118,7 +120,7 @@ function init(socketIo) {
     socket.on('voteMap', (mapId) => {
       const lobby = LOBBIES[socket.lobbyId];
       if (!lobby || lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
-      if (mapId !== 'friuli' && mapId !== 'italy') return;
+      if (mapId !== 'friuli' && mapId !== 'italy' && mapId !== 'porpetto') return;
       lobby.votes[socket.id] = mapId;
       broadcastState(socket.lobbyId);
     });
@@ -152,14 +154,22 @@ function init(socketIo) {
       }
 
       // Tally votes
-      let friuliVotes = 0;
-      let italyVotes = 0;
+      let votesCount = { friuli: 0, italy: 0, porpetto: 0 };
       for (const p of playerList) {
         const v = lobby.votes[p.id];
-        if (v === 'italy') italyVotes++;
-        else friuliVotes++;
+        if (v === 'italy' || v === 'porpetto') {
+          votesCount[v]++;
+        } else {
+          votesCount.friuli++;
+        }
       }
-      lobby.selectedMap = italyVotes > friuliVotes ? 'italy' : 'friuli';
+      
+      let winner = 'friuli';
+      let maxVotes = votesCount.friuli;
+      if (votesCount.italy > maxVotes) { winner = 'italy'; maxVotes = votesCount.italy; }
+      if (votesCount.porpetto > maxVotes) { winner = 'porpetto'; maxVotes = votesCount.porpetto; }
+      
+      lobby.selectedMap = winner;
       
       // Assign starting locations now that map is decided
       playerList.forEach(p => {

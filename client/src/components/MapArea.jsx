@@ -3,6 +3,11 @@ import Map, { Marker, Source, Layer, NavigationControl } from 'react-map-gl/mapl
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './MapArea.css';
 
+const PORPETTO_BOUNDS = [
+  [13.18, 45.83], // SW
+  [13.25, 45.88]  // NE
+];
+
 const ITALY_BOUNDS = [
   [6.5, 35.5], // Southwest coordinates
   [19.0, 47.5]  // Northeast coordinates
@@ -61,6 +66,14 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
         longitude: 12.5,
         latitude: 41.9,
         zoom: 5.5,
+        pitch: 0,
+        bearing: 0
+      });
+    } else if (selectedMap === 'porpetto') {
+      setViewState({
+        longitude: 13.213,
+        latitude: 45.858,
+        zoom: 14.5,
         pitch: 0,
         bearing: 0
       });
@@ -175,7 +188,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
             fontSize: '14px'
           }}
         >
-          🚗 Auto
+          {selectedMap === 'porpetto' ? '🚶 A Piedi' : '🚗 Auto'}
         </button>
 
         {/* Train Button */}
@@ -193,7 +206,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
             fontSize: '14px'
           }}
         >
-          🚂 Treno
+          {selectedMap === 'porpetto' ? '🚲 In Bici' : '🚂 Treno'}
         </button>
 
         {/* Plane Button */}
@@ -211,7 +224,7 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
             fontSize: '14px'
           }}
         >
-          ✈️ Aereo
+          {selectedMap === 'porpetto' ? '🛵 Motorino' : '✈️ Aereo'}
         </button>
       </div>
 
@@ -221,8 +234,8 @@ function MapArea({ mapData, selectedMap, players, myPlayer, isMyTurn, onMove }) 
         mapStyle={OSM_STYLE}
         style={{ width: '100%', height: '100%' }}
         maxPitch={60}
-        maxBounds={selectedMap === 'italy' ? ITALY_BOUNDS : FVG_BOUNDS}
-        minZoom={selectedMap === 'italy' ? 4 : 5}
+        maxBounds={selectedMap === 'italy' ? ITALY_BOUNDS : (selectedMap === 'porpetto' ? PORPETTO_BOUNDS : FVG_BOUNDS)}
+        minZoom={selectedMap === 'italy' ? 4 : (selectedMap === 'porpetto' ? 14 : 5)}
       >
         <NavigationControl position="bottom-right" />
 
