@@ -12,20 +12,17 @@ const newTowns = [
 ];
 
 const connections = [
-  // Planes (straight lines, geometry = [])
-  { source: 'Roma', target: 'Milano', type: 'plane' },
-  { source: 'Roma', target: 'Palermo', type: 'plane' },
-  { source: 'Roma', target: 'Catania', type: 'plane' },
+  // Planes (curved paths, stepwise)
+  { source: 'Milano', target: 'Venezia', type: 'plane' },
+  { source: 'Milano', target: 'Genova', type: 'plane' },
+  { source: 'Venezia', target: 'Roma', type: 'plane' },
+  { source: 'Genova', target: 'Roma', type: 'plane' },
+  { source: 'Roma', target: 'Napoli', type: 'plane' },
+  { source: 'Napoli', target: 'Bari', type: 'plane' },
+  { source: 'Napoli', target: 'Palermo', type: 'plane' },
+  { source: 'Palermo', target: 'Catania', type: 'plane' },
   { source: 'Roma', target: 'Cagliari', type: 'plane' },
-  { source: 'Roma', target: 'Venezia', type: 'plane' },
-  { source: 'Roma', target: 'Bari', type: 'plane' },
-  { source: 'Milano', target: 'Napoli', type: 'plane' },
-  { source: 'Milano', target: 'Palermo', type: 'plane' },
-  { source: 'Milano', target: 'Catania', type: 'plane' },
-  { source: 'Milano', target: 'Cagliari', type: 'plane' },
-  { source: 'Milano', target: 'Bari', type: 'plane' },
-  { source: 'Venezia', target: 'Palermo', type: 'plane' },
-  { source: 'Napoli', target: 'Cagliari', type: 'plane' },
+  { source: 'Cagliari', target: 'Palermo', type: 'plane' },
 
   // Trains (straight lines for distinction)
   { source: 'Torino', target: 'Milano', type: 'train' },
@@ -137,6 +134,34 @@ async function getRouteGeometry(sourceNode, targetNode) {
   });
 }
 
+function getPlaneGeometry(source, target) {
+  const points = [];
+  const steps = 20;
+  
+  const mx = (source.lng + target.lng) / 2;
+  const my = (source.lat + target.lat) / 2;
+  
+  const dx = target.lng - source.lng;
+  const dy = target.lat - source.lat;
+  
+  const nx = -dy;
+  const ny = dx;
+  
+  const offset = 0.2;
+  const cx = mx + nx * offset;
+  const cy = my + ny * offset;
+  
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const mt = 1 - t;
+    const x = mt*mt * source.lng + 2*mt*t * cx + t*t * target.lng;
+    const y = mt*mt * source.lat + 2*mt*t * cy + t*t * target.lat;
+    points.push([x, y]);
+  }
+  
+  return points;
+}
+
 async function run() {
   const mapData = { nodes: [], links: [] };
 
@@ -157,9 +182,11 @@ async function run() {
     
     if (sourceNode && targetNode) {
       let geometry = [];
-      if (conn.type === 'car') {
+      if (conn.type === 'car' || conn.type === 'train') {
         await new Promise(r => setTimeout(r, 200));
         geometry = await getRouteGeometry(sourceNode, targetNode);
+      } else if (conn.type === 'plane') {
+        geometry = getPlaneGeometry(sourceNode, targetNode);
       }
       
       mapData.links.push({
