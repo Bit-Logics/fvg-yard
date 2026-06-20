@@ -3,6 +3,8 @@ import { io } from 'socket.io-client';
 import Lobby from './components/Lobby';
 import MapArea from './components/MapArea';
 import GameUI from './components/GameUI';
+import FugitiveLog from './components/FugitiveLog';
+import FugitiveControls from './components/FugitiveControls';
 import { Sun, Moon } from 'lucide-react';
 import './App.css';
 
@@ -77,8 +79,8 @@ function App() {
     socket.emit('startGame');
   };
 
-  const handleMove = (targetId, transportType) => {
-    socket.emit('move', { targetId, transportType });
+  const handleMove = (targetId, transportType, isDouble = false, isSecret = false) => {
+    socket.emit('move', { targetId, transportType, isDouble, isSecret });
   };
 
   const handleSetRole = (role) => {
@@ -88,6 +90,7 @@ function App() {
   const myPlayer = players[socket.id];
   const isMyTurn = turnOrder[currentTurnIndex] === socket.id;
   const currentPlayer = players[turnOrder[currentTurnIndex]];
+  const fugitivePlayer = Object.values(players).find(p => p.role === 'fugitive');
 
   return (
     <div className="app-container">
@@ -126,6 +129,21 @@ function App() {
             isMyTurn={isMyTurn}
             currentPlayer={currentPlayer}
           />
+          
+          {fugitivePlayer && (
+            <FugitiveLog 
+              history={fugitivePlayer.history} 
+              isFugitive={myPlayer?.role === 'fugitive'} 
+            />
+          )}
+
+          {myPlayer?.role === 'fugitive' && isMyTurn && (
+            <FugitiveControls 
+              onMove={handleMove}
+              mapData={mapData}
+              specialTickets={myPlayer.specialTickets}
+            />
+          )}
         </>
       )}
     </div>

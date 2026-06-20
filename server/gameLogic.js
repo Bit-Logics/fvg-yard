@@ -1,6 +1,7 @@
 const mapData = require('./mapData.json');
 
 const TURN_TIME_MS = 60000; // 60 seconds
+const REVEAL_TURNS = [3, 8, 13, 18, 24]; // Scotland Yard reveal turns
 
 let io;
 let players = {};
@@ -24,7 +25,7 @@ function init(socketIo) {
     console.log('Player connected:', socket.id);
     
     // Send current state to new player
-    socket.emit('gameState', getPublicState());
+    socket.emit('gameState', getPublicState(socket.id));
     
     socket.on('join', (name) => {
       if (gameState !== 'lobby') {
@@ -36,21 +37,16 @@ function init(socketIo) {
         return;
       }
       
-      const isFirst = Object.keys(players).length === 0;
       players[socket.id] = {
         id: socket.id,
         name: name || `Player ${Object.keys(players).length + 1}`,
         role: 'detective', // Everyone starts as detective, must manually claim fugitive
         location: getRandomLocation(),
         tickets: { ...STARTING_TICKETS },
+        specialTickets: { double: 0, secret: 0 },
         isReady: false,
         history: []
       };
-      
-      if (players[socket.id].role === 'fugitive') {
-         // Fugitive gets special tickets representation or logic
-         players[socket.id].tickets = { car: '∞', train: '∞', plane: '∞', black: '∞' };
-      }
       
       broadcastState();
     });
@@ -85,8 +81,10 @@ function init(socketIo) {
         p.history = [];
         if (p.role === 'fugitive') {
           p.tickets = { car: '∞', train: '∞', plane: '∞' };
+          p.specialTickets = { double: 3, secret: 3 };
         } else {
           p.tickets = { ...STARTING_TICKETS };
+          p.specialTickets = { double: 0, secret: 0 };
         }
       });
       
@@ -103,7 +101,7 @@ function init(socketIo) {
     
     socket.on('move', (data) => {
       if (gameState !== 'playing') return;
-      const { targetId, transportType } = data; // e.g. { targetId: 5, transportType: 'train' }
+      let { targetId, transportType, isDouble, isSecret } = data; // e.g. { targetId: 5, transportType: 'train' }
       
       const currentPlayerId = turnOrder[currentTurnIndex];
       if (socket.id !== currentPlayerId) {
@@ -126,10 +124,36 @@ function init(socketIo) {
           return;
         }
         player.tickets[transportType]--;
+        isDouble = false;
+        isSecret = false;
+      }
+
+      let skipNextTurn = false;
+      if (player.role === 'fugitive') {
+        if (isDouble) {
+          if (player.specialTickets.double > 0) {
+            player.specialTickets.double--;
+            skipNextTurn = true;
+          } else {
+            isDouble = false;
+          }
+        }
+        if (isSecret) {
+          if (player.specialTickets.secret > 0) {
+            player.specialTickets.secret--;
+          } else {
+            isSecret = false;
+          }
+        }
       }
       
       // Apply move
-      player.history.push({ from: player.location, to: targetId, type: transportType });
+      player.history.push({ 
+        from: player.location, 
+        to: targetId, 
+        actualType: transportType,
+        displayType: isSecret ? 'secret' : transportType
+      });
       player.location = targetId;
       
       // Check win condition
@@ -137,7 +161,12 @@ function init(socketIo) {
         return;
       }
       
-      nextTurn();
+      if (skipNextTurn) {
+        startTurnTimer();
+        broadcastState();
+      } else {
+        nextTurn();
+      }
     });
     
     socket.on('disconnect', () => {
@@ -168,6 +197,7 @@ function isValidMove(fromId, toId, transportType) {
 function checkWinCondition() {
   const playerList = Object.values(players);
   const fugitive = playerList.find(p => p.role === 'fugitive');
+  if (!fugitive) return false;
   const detectives = playerList.filter(p => p.role === 'detective');
   
   // Detectives win if any is on the same node as fugitive
@@ -178,11 +208,10 @@ function checkWinCondition() {
     return true;
   }
   
-  // Fugitive wins if all detectives are out of tickets (simplified: round 22 reached)
-  // For now, let's say round 22 is max. Fugitive history length = 22
-  if (fugitive.history.length >= 22) {
+  // Fugitive wins if survives 24 rounds
+  if (fugitive.history.length >= 24) {
     gameState = 'finished';
-    io.emit('gameOver', { winner: 'fugitive', reason: 'Fugitive survived 22 rounds!' });
+    io.emit('gameOver', { winner: 'fugitive', reason: 'Fugitive survived 24 rounds!' });
     stopTimer();
     return true;
   }
@@ -223,18 +252,35 @@ function stopTimer() {
   if (timerInterval) clearInterval(timerInterval);
 }
 
-function getPublicState() {
-  // Hide fugitive's exact location from detectives most turns?
-  // Scotland Yard rules: fugitive is visible on turns 3, 8, 13, 18, 24.
-  // For simplicity first, let's keep it visible, or implement the hide logic.
-  // Let's implement full visibility first, then hide if time permits.
-  // Actually, we'll keep it simple for a fluid web game: always visible, or hide depending on turn number.
-  // The prompt says "come scotland yard", let's hide it unless it's a specific turn, BUT wait,
-  // let's send full state to fugitive and obfuscated to detectives.
+function getPublicState(requestingSocketId) {
+  const requestingPlayer = players[requestingSocketId];
+  const isFugitiveReq = requestingPlayer && requestingPlayer.role === 'fugitive';
+  
+  const sanitizedPlayers = JSON.parse(JSON.stringify(players));
+  
+  const fugitiveId = Object.keys(sanitizedPlayers).find(id => sanitizedPlayers[id].role === 'fugitive');
+  if (fugitiveId && !isFugitiveReq) {
+    const f = sanitizedPlayers[fugitiveId];
+    const turnNum = f.history.length;
+    
+    const isReveal = REVEAL_TURNS.includes(turnNum);
+    
+    if (!isReveal) {
+      f.location = null; 
+    }
+    
+    f.history = f.history.map((h, i) => {
+      const turnIdx = i + 1;
+      return {
+        displayType: h.displayType,
+        to: REVEAL_TURNS.includes(turnIdx) ? h.to : null
+      };
+    });
+  }
   
   return {
     gameState,
-    players,
+    players: sanitizedPlayers,
     turnOrder,
     currentTurnIndex,
     currentPlayerId: turnOrder[currentTurnIndex],
@@ -243,7 +289,11 @@ function getPublicState() {
 }
 
 function broadcastState() {
-  io.emit('gameState', getPublicState());
+  if (!io) return;
+  const sockets = Array.from(io.sockets.sockets.values());
+  sockets.forEach(socket => {
+    socket.emit('gameState', getPublicState(socket.id));
+  });
 }
 
 module.exports = { init };

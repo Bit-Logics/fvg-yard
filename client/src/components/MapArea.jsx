@@ -206,7 +206,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             type="line" 
             paint={{
               'line-color': getTransportColor('car'),
-              'line-width': 4,
+              'line-width': 6,
               'line-opacity': 0.8
             }} 
           />
@@ -219,10 +219,10 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             type="line" 
             paint={{
               'line-color': getTransportColor('train'),
-              'line-width': 4,
+              'line-width': 6,
               'line-opacity': 0.9,
               'line-dasharray': [2, 2],
-              'line-offset': 5
+              'line-offset': 8
             }} 
           />
         </Source>
@@ -234,10 +234,10 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             type="line" 
             paint={{
               'line-color': getTransportColor('plane'),
-              'line-width': 3,
+              'line-width': 5,
               'line-opacity': 0.8,
               'line-dasharray': [1, 4],
-              'line-offset': -5
+              'line-offset': -8
             }} 
           />
         </Source>
@@ -297,6 +297,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
 
         {/* Draw Players */}
         {playersList.map((p, i) => {
+          if (!p.location) return null; // Hide if location is masked by server!
           const node = mapData.nodes.find(n => n.id === p.location);
           if (!node) return null;
           
