@@ -24,7 +24,8 @@ function App() {
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [mapData, setMapData] = useState(null);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [lobbies, setLobbies] = useState([]);
+  const [currentLobbyId, setCurrentLobbyId] = useState('lobby1');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -43,6 +44,11 @@ function App() {
       setTurnOrder(state.turnOrder);
       setCurrentTurnIndex(state.currentTurnIndex);
       setTimeLeft(state.timeLeft);
+      if (state.lobbyId) setCurrentLobbyId(state.lobbyId);
+    });
+
+    socket.on('lobbiesMeta', (meta) => {
+      setLobbies(meta);
     });
 
     socket.on('timerUpdate', (time) => {
@@ -56,16 +62,23 @@ function App() {
 
     socket.on('gameOver', ({ winner, reason }) => {
       alert(`Game Over! ${winner} wins! Reason: ${reason}`);
-      setGameState('lobby');
     });
 
     return () => {
       socket.off('gameState');
+      socket.off('lobbiesMeta');
       socket.off('timerUpdate');
       socket.off('errorMsg');
       socket.off('gameOver');
     };
   }, []);
+
+  const handleSwitchLobby = (lobbyId) => {
+    if (lobbyId !== currentLobbyId) {
+      setPlayers({});
+      socket.emit('switchLobby', lobbyId);
+    }
+  };
 
   const toggleTheme = () => {
     setTheme(t => {
@@ -117,6 +130,9 @@ function App() {
           onSetRole={handleSetRole}
           onDraw={() => socket.emit('drawCard')}
           isGameInProgress={gameState === 'playing'}
+          lobbies={lobbies}
+          currentLobbyId={currentLobbyId}
+          onSwitchLobby={handleSwitchLobby}
         />
       )}
 

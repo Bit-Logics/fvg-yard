@@ -1,21 +1,20 @@
 const mapData = require('./mapData.json');
 
 const TURN_TIME_MS = 60000; // 60 seconds
-const REVEAL_TURNS = [3, 8, 13, 18, 24]; // Scotland Yard reveal turns
-
-let io;
-let players = {};
-let gameState = 'lobby'; // lobby, playing, finished
-let turnOrder = [];
-let currentTurnIndex = 0;
-let timer = null;
-let timeLeft = 0;
-let timerInterval = null;
+const REVEAL_TURNS = [3, 8, 13, 18, 24];
 
 const STARTING_TICKETS = {
   car: 10,
   train: 8,
   plane: 4
+};
+
+let io;
+
+const LOBBIES = {
+  lobby1: { id: 'lobby1', name: 'Lobby 1', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null },
+  lobby2: { id: 'lobby2', name: 'Lobby 2', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null },
+  lobby3: { id: 'lobby3', name: 'Lobby 3', players: {}, gameState: 'lobby', turnOrder: [], currentTurnIndex: 0, timer: null, timeLeft: 0, timerInterval: null },
 };
 
 function init(socketIo) {
@@ -24,15 +23,53 @@ function init(socketIo) {
   io.on('connection', (socket) => {
     console.log('Player connected:', socket.id);
     
-    // Send current state to new player
-    socket.emit('gameState', getPublicState(socket.id));
+    // Auto-assign to best lobby
+    let bestLobbyId = 'lobby1';
+    let maxPlayers = -1;
+    for (const [lId, lobby] of Object.entries(LOBBIES)) {
+      const pCount = Object.keys(lobby.players).length;
+      if (lobby.gameState === 'lobby' && pCount < 10 && pCount > maxPlayers) {
+        maxPlayers = pCount;
+        bestLobbyId = lId;
+      }
+    }
     
+    socket.lobbyId = bestLobbyId;
+    socket.join(bestLobbyId);
+    
+    socket.emit('gameState', getPublicState(socket.id, bestLobbyId));
+    broadcastLobbiesMeta();
+    
+    socket.on('switchLobby', (targetLobbyId) => {
+      if (!LOBBIES[targetLobbyId]) return;
+      
+      const oldLobbyId = socket.lobbyId;
+      if (oldLobbyId) {
+        // Remove from old lobby
+        if (LOBBIES[oldLobbyId].players[socket.id]) {
+          delete LOBBIES[oldLobbyId].players[socket.id];
+          if (Object.keys(LOBBIES[oldLobbyId].players).length < 2 && LOBBIES[oldLobbyId].gameState === 'playing') {
+            LOBBIES[oldLobbyId].gameState = 'lobby';
+            stopTimer(oldLobbyId);
+          }
+        }
+        socket.leave(oldLobbyId);
+        broadcastState(oldLobbyId);
+      }
+      
+      socket.lobbyId = targetLobbyId;
+      socket.join(targetLobbyId);
+      socket.emit('gameState', getPublicState(socket.id, targetLobbyId));
+      broadcastLobbiesMeta();
+    });
+
     socket.on('join', (data) => {
-      if (gameState !== 'lobby') {
+      const lobby = LOBBIES[socket.lobbyId];
+      if (lobby.gameState !== 'lobby') {
         socket.emit('errorMsg', 'Game already started');
         return;
       }
-      if (Object.keys(players).length >= 10) {
+      if (Object.keys(lobby.players).length >= 10) {
         socket.emit('errorMsg', 'Lobby full');
         return;
       }
@@ -40,12 +77,12 @@ function init(socketIo) {
       const playerName = typeof data === 'object' ? data.name : data;
       const playerColor = typeof data === 'object' ? data.color : '#3b82f6';
 
-      players[socket.id] = {
+      lobby.players[socket.id] = {
         id: socket.id,
-        name: playerName || `Player ${Object.keys(players).length + 1}`,
+        name: playerName || `Player ${Object.keys(lobby.players).length + 1}`,
         color: playerColor,
         role: 'detective', 
-        location: null, // location is assigned when drawing card
+        location: null,
         hasDrawn: false,
         tickets: { ...STARTING_TICKETS },
         specialTickets: { double: 0, secret: 0 },
@@ -53,32 +90,36 @@ function init(socketIo) {
         history: []
       };
       
-      broadcastState();
+      broadcastState(socket.lobbyId);
+      broadcastLobbiesMeta();
     });
     
     socket.on('setRole', (role) => {
-      if (gameState !== 'lobby' || !players[socket.id]) return;
+      const lobby = LOBBIES[socket.lobbyId];
+      if (lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
       if (role === 'fugitive') {
-        Object.values(players).forEach(p => {
+        Object.values(lobby.players).forEach(p => {
           if (p.role === 'fugitive') p.role = 'detective';
         });
-        players[socket.id].role = 'fugitive';
+        lobby.players[socket.id].role = 'fugitive';
       }
-      broadcastState();
+      broadcastState(socket.lobbyId);
     });
 
     socket.on('drawCard', () => {
-      if (gameState !== 'lobby' || !players[socket.id]) return;
-      if (players[socket.id].hasDrawn) return;
+      const lobby = LOBBIES[socket.lobbyId];
+      if (lobby.gameState !== 'lobby' || !lobby.players[socket.id]) return;
+      if (lobby.players[socket.id].hasDrawn) return;
       
-      players[socket.id].location = getRandomLocation();
-      players[socket.id].hasDrawn = true;
-      broadcastState();
+      lobby.players[socket.id].location = getRandomLocation(lobby);
+      lobby.players[socket.id].hasDrawn = true;
+      broadcastState(socket.lobbyId);
     });
     
     socket.on('startGame', () => {
-      if (gameState !== 'lobby') return;
-      const playerList = Object.values(players);
+      const lobby = LOBBIES[socket.lobbyId];
+      if (lobby.gameState !== 'lobby') return;
+      const playerList = Object.values(lobby.players);
       if (playerList.length < 2) {
         socket.emit('errorMsg', 'Need at least 2 players');
         return;
@@ -103,36 +144,35 @@ function init(socketIo) {
         }
       });
       
-      // Setup turn order: Fugitive goes first, then detectives
       const fugitive = playerList.find(p => p.role === 'fugitive');
       const detectives = playerList.filter(p => p.role === 'detective');
-      turnOrder = [fugitive.id, ...detectives.map(d => d.id)];
-      currentTurnIndex = 0;
-      gameState = 'playing';
+      lobby.turnOrder = [fugitive.id, ...detectives.map(d => d.id)];
+      lobby.currentTurnIndex = 0;
+      lobby.gameState = 'playing';
       
-      startTurnTimer();
-      broadcastState();
+      startTurnTimer(socket.lobbyId);
+      broadcastState(socket.lobbyId);
+      broadcastLobbiesMeta();
     });
     
     socket.on('move', (data) => {
-      if (gameState !== 'playing') return;
-      let { targetId, transportType, isDouble, isSecret } = data; // e.g. { targetId: 5, transportType: 'train' }
+      const lobby = LOBBIES[socket.lobbyId];
+      if (lobby.gameState !== 'playing') return;
+      let { targetId, transportType, isDouble, isSecret } = data;
       
-      const currentPlayerId = turnOrder[currentTurnIndex];
+      const currentPlayerId = lobby.turnOrder[lobby.currentTurnIndex];
       if (socket.id !== currentPlayerId) {
         socket.emit('errorMsg', 'Not your turn');
         return;
       }
       
-      const player = players[socket.id];
+      const player = lobby.players[socket.id];
       
-      // Validate move
-      if (!isValidMove(player.location, targetId, transportType, socket.id)) {
+      if (!isValidMove(player.location, targetId, transportType, socket.id, lobby)) {
         socket.emit('errorMsg', 'Invalid move');
         return;
       }
       
-      // Consume ticket
       if (player.role === 'detective') {
         if (player.tickets[transportType] <= 0) {
           socket.emit('errorMsg', 'No tickets of that type');
@@ -162,7 +202,6 @@ function init(socketIo) {
         }
       }
       
-      // Apply move
       player.history.push({ 
         from: player.location, 
         to: targetId, 
@@ -171,41 +210,46 @@ function init(socketIo) {
       });
       player.location = targetId;
       
-      // Check win condition
-      if (checkWinCondition()) {
+      if (checkWinCondition(socket.lobbyId)) {
         return;
       }
       
       if (skipNextTurn) {
-        startTurnTimer();
-        broadcastState();
+        startTurnTimer(socket.lobbyId);
+        broadcastState(socket.lobbyId);
       } else {
-        nextTurn();
+        nextTurn(socket.lobbyId);
       }
     });
     
     socket.on('disconnect', () => {
       console.log('Player disconnected:', socket.id);
-      delete players[socket.id];
-      if (Object.keys(players).length < 2 && gameState === 'playing') {
-        gameState = 'lobby';
-        stopTimer();
+      const lId = socket.lobbyId;
+      if (lId && LOBBIES[lId]) {
+        if (LOBBIES[lId].players[socket.id]) {
+          delete LOBBIES[lId].players[socket.id];
+          if (Object.keys(LOBBIES[lId].players).length < 2 && LOBBIES[lId].gameState === 'playing') {
+            LOBBIES[lId].gameState = 'lobby';
+            stopTimer(lId);
+          }
+          broadcastState(lId);
+          broadcastLobbiesMeta();
+        }
       }
-      broadcastState();
     });
   });
 }
 
-function getRandomLocation() {
+function getRandomLocation(lobby) {
   const nodes = mapData.nodes;
   let loc;
   do {
     loc = nodes[Math.floor(Math.random() * nodes.length)].id;
-  } while (Object.values(players).some(p => p.location === loc));
+  } while (Object.values(lobby.players).some(p => p.location === loc));
   return loc;
 }
 
-function isValidMove(fromId, toId, transportType, playerId) {
+function isValidMove(fromId, toId, transportType, playerId, lobby) {
   const hasLink = mapData.links.some(l => 
     ((l.source === fromId && l.target === toId) || 
      (l.source === toId && l.target === fromId)) && 
@@ -213,78 +257,82 @@ function isValidMove(fromId, toId, transportType, playerId) {
   );
   if (!hasLink) return false;
 
-  const player = players[playerId];
+  const player = lobby.players[playerId];
   if (player && player.role === 'detective') {
-    // Detectives cannot move to a node occupied by another detective
-    const occupiedByDetective = Object.values(players).some(p => p.role === 'detective' && p.id !== playerId && p.location === toId);
+    const occupiedByDetective = Object.values(lobby.players).some(p => p.role === 'detective' && p.id !== playerId && p.location === toId);
     if (occupiedByDetective) return false;
   }
   return true;
 }
 
-function checkWinCondition() {
-  const playerList = Object.values(players);
+function checkWinCondition(lobbyId) {
+  const lobby = LOBBIES[lobbyId];
+  const playerList = Object.values(lobby.players);
   const fugitive = playerList.find(p => p.role === 'fugitive');
   if (!fugitive) return false;
   const detectives = playerList.filter(p => p.role === 'detective');
   
-  // Detectives win if any is on the same node as fugitive
   if (detectives.some(d => d.location === fugitive.location)) {
-    gameState = 'finished';
-    io.emit('gameOver', { winner: 'detectives', reason: 'Fugitive caught!' });
-    stopTimer();
+    lobby.gameState = 'finished';
+    io.to(lobbyId).emit('gameOver', { winner: 'detectives', reason: 'Fugitive caught!' });
+    stopTimer(lobbyId);
+    broadcastLobbiesMeta();
     return true;
   }
   
-  // Fugitive wins if survives 24 rounds
   if (fugitive.history.length >= 24) {
-    gameState = 'finished';
-    io.emit('gameOver', { winner: 'fugitive', reason: 'Fugitive survived 24 rounds!' });
-    stopTimer();
+    lobby.gameState = 'finished';
+    io.to(lobbyId).emit('gameOver', { winner: 'fugitive', reason: 'Fugitive survived 24 rounds!' });
+    stopTimer(lobbyId);
+    broadcastLobbiesMeta();
     return true;
   }
   
   return false;
 }
 
-function nextTurn() {
-  currentTurnIndex = (currentTurnIndex + 1) % turnOrder.length;
+function nextTurn(lobbyId) {
+  const lobby = LOBBIES[lobbyId];
+  lobby.currentTurnIndex = (lobby.currentTurnIndex + 1) % lobby.turnOrder.length;
   
-  // Skip player if they have no valid moves/tickets (if detective)
-  const player = players[turnOrder[currentTurnIndex]];
+  const player = lobby.players[lobby.turnOrder[lobby.currentTurnIndex]];
   if (player.role === 'detective' && Object.values(player.tickets).every(t => t === 0)) {
-     nextTurn();
+     nextTurn(lobbyId);
      return;
   }
   
-  startTurnTimer();
-  broadcastState();
+  startTurnTimer(lobbyId);
+  broadcastState(lobbyId);
 }
 
-function startTurnTimer() {
-  stopTimer();
-  timeLeft = TURN_TIME_MS / 1000;
+function startTurnTimer(lobbyId) {
+  const lobby = LOBBIES[lobbyId];
+  stopTimer(lobbyId);
+  lobby.timeLeft = TURN_TIME_MS / 1000;
   
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    io.emit('timerUpdate', timeLeft);
+  lobby.timerInterval = setInterval(() => {
+    lobby.timeLeft--;
+    io.to(lobbyId).emit('timerUpdate', lobby.timeLeft);
     
-    if (timeLeft <= 0) {
-      // Time up, pass turn
-      nextTurn();
+    if (lobby.timeLeft <= 0) {
+      nextTurn(lobbyId);
     }
   }, 1000);
 }
 
-function stopTimer() {
-  if (timerInterval) clearInterval(timerInterval);
+function stopTimer(lobbyId) {
+  const lobby = LOBBIES[lobbyId];
+  if (lobby.timerInterval) clearInterval(lobby.timerInterval);
 }
 
-function getPublicState(requestingSocketId) {
-  const requestingPlayer = players[requestingSocketId];
+function getPublicState(requestingSocketId, lobbyId) {
+  const lobby = LOBBIES[lobbyId];
+  if (!lobby) return null;
+  
+  const requestingPlayer = lobby.players[requestingSocketId];
   const isFugitiveReq = requestingPlayer && requestingPlayer.role === 'fugitive';
   
-  const sanitizedPlayers = JSON.parse(JSON.stringify(players));
+  const sanitizedPlayers = JSON.parse(JSON.stringify(lobby.players));
   
   const fugitiveId = Object.keys(sanitizedPlayers).find(id => sanitizedPlayers[id].role === 'fugitive');
   if (fugitiveId && !isFugitiveReq) {
@@ -313,21 +361,42 @@ function getPublicState(requestingSocketId) {
   }
   
   return {
-    gameState,
+    gameState: lobby.gameState,
     players: sanitizedPlayers,
-    turnOrder,
-    currentTurnIndex,
-    currentPlayerId: turnOrder[currentTurnIndex],
-    timeLeft
+    turnOrder: lobby.turnOrder,
+    currentTurnIndex: lobby.currentTurnIndex,
+    currentPlayerId: lobby.turnOrder[lobby.currentTurnIndex],
+    timeLeft: lobby.timeLeft,
+    lobbyId: lobby.id
   };
 }
 
-function broadcastState() {
+function broadcastState(lobbyId) {
   if (!io) return;
-  const sockets = Array.from(io.sockets.sockets.values());
-  sockets.forEach(socket => {
-    socket.emit('gameState', getPublicState(socket.id));
-  });
+  const lobby = LOBBIES[lobbyId];
+  if (!lobby) return;
+  
+  // Get all sockets in this lobby
+  const room = io.sockets.adapter.rooms.get(lobbyId);
+  if (room) {
+    for (const socketId of room) {
+      const socket = io.sockets.sockets.get(socketId);
+      if (socket) {
+        socket.emit('gameState', getPublicState(socketId, lobbyId));
+      }
+    }
+  }
+}
+
+function broadcastLobbiesMeta() {
+  if (!io) return;
+  const meta = Object.values(LOBBIES).map(l => ({
+    id: l.id,
+    name: l.name,
+    playerCount: Object.keys(l.players).length,
+    gameState: l.gameState
+  }));
+  io.emit('lobbiesMeta', meta);
 }
 
 module.exports = { init };

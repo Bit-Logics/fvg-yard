@@ -25,7 +25,7 @@ const PawnSVG = ({ color, isFugitive }) => (
   </svg>
 );
 
-function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw }) {
+function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProgress, lobbies, currentLobbyId, onSwitchLobby }) {
   const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState('#3b82f6');
   const me = players[myId];
@@ -43,7 +43,38 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw }) {
 
   return (
     <div className="lobby-container">
-      <div className="lobby-panel glass-panel" style={{ minWidth: '400px' }}>
+      <div className="lobby-panel glass-panel" style={{ minWidth: '400px', display: 'flex', flexDirection: 'column' }}>
+        
+        {/* Lobby Selector Tabs */}
+        {lobbies && lobbies.length > 0 && (
+          <div style={{ display: 'flex', gap: '5px', marginBottom: '15px', borderBottom: '1px solid var(--panel-border)', paddingBottom: '10px' }}>
+            {lobbies.map(l => (
+              <button
+                key={l.id}
+                onClick={() => onSwitchLobby(l.id)}
+                style={{
+                  flex: 1,
+                  padding: '8px 4px',
+                  backgroundColor: l.id === currentLobbyId ? 'var(--primary-color)' : 'transparent',
+                  color: l.id === currentLobbyId ? 'white' : 'var(--text-primary)',
+                  border: '1px solid var(--panel-border)',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.8rem',
+                  transition: 'all 0.2s',
+                  boxShadow: l.id === currentLobbyId ? 'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                <div>{l.name}</div>
+                <div style={{ fontSize: '0.7rem', fontWeight: 'normal', opacity: 0.9 }}>
+                  {l.playerCount}/10 {l.gameState === 'playing' ? '▶️' : '⏳'}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
         <h1 style={{ marginBottom: 0 }}>FVG Yard</h1>
         <p className="subtitle" style={{ marginTop: '5px' }}>L'inseguimento in Friuli-Venezia Giulia</p>
         
