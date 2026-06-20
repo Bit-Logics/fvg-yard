@@ -159,26 +159,6 @@ function App() {
   return (
     <div className="app-container">
       <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 1000, display: 'flex', gap: '10px' }}>
-        {gameState === 'playing' && (
-          <button 
-            className="theme-toggle" 
-            onClick={() => socket.emit('voteEndGame')}
-            style={{ 
-              display: 'flex', alignItems: 'center', gap: '5px', 
-              backgroundColor: endGameVotes[socket.id] ? 'var(--danger-color)' : 'var(--panel-bg)',
-              color: endGameVotes[socket.id] ? 'white' : 'var(--text-primary)'
-            }}
-            title="Vota per terminare la partita in anticipo"
-          >
-            <Flag size={20} />
-            <span style={{ fontWeight: 'bold' }}>Resa</span>
-            {Object.keys(endGameVotes).length > 0 && (
-              <span style={{ fontSize: '0.8rem', fontWeight: 'bold', marginLeft: '5px' }}>
-                ({Object.keys(endGameVotes).length}/{Object.keys(players).length})
-              </span>
-            )}
-          </button>
-        )}
         <button className="theme-toggle" onClick={toggleTheme}>
           {theme === 'light' ? <Sun size={20} /> : theme === 'dark' ? <Moon size={20} /> : <TreePine size={20} />}
         </button>
@@ -223,6 +203,11 @@ function App() {
             isMyTurn={isMyTurn}
             currentPlayer={currentPlayer}
             selectedMap={selectedMap}
+            endGameVotes={endGameVotes}
+            onVoteEndGame={() => socket.emit('voteEndGame')}
+            gameState={gameState}
+            onResetLobby={() => socket.emit('resetLobby')}
+            totalPlayers={Object.keys(players).length}
           />
           
           {fugitivePlayer && (

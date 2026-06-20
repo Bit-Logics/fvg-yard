@@ -1,7 +1,8 @@
 import React from 'react';
+import { Flag } from 'lucide-react';
 import './GameUI.css';
 
-function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap }) {
+function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap, endGameVotes, onVoteEndGame, gameState, onResetLobby, totalPlayers }) {
   if (!myPlayer) return null;
 
   const isPorpetto = selectedMap === 'porpetto';
@@ -44,10 +45,47 @@ function GameUI({ myPlayer, timeLeft, isMyTurn, currentPlayer, selectedMap }) {
           </div>
         </div>
 
-        {/* Right: Position */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Right: Position & Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>POSIZIONE:</div>
           <div style={{ fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap' }}>{myPlayer.location || 'Nascosta'}</div>
+          
+          <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--panel-border)', margin: '0 5px' }} />
+          
+          {gameState === 'playing' ? (
+            <button 
+              onClick={onVoteEndGame}
+              style={{ 
+                display: 'flex', alignItems: 'center', gap: '5px', 
+                backgroundColor: endGameVotes && endGameVotes[myPlayer.id] ? 'var(--danger-color)' : 'transparent',
+                color: endGameVotes && endGameVotes[myPlayer.id] ? 'white' : 'var(--danger-color)',
+                border: '1px solid var(--danger-color)',
+                padding: '4px 10px', borderRadius: '4px', cursor: 'pointer'
+              }}
+              title="Vota per terminare la partita in anticipo"
+            >
+              <Flag size={16} />
+              <span style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Resa</span>
+              {endGameVotes && Object.keys(endGameVotes).length > 0 && (
+                <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                  ({Object.keys(endGameVotes).length}/{totalPlayers})
+                </span>
+              )}
+            </button>
+          ) : gameState === 'finished' ? (
+            <button 
+              onClick={onResetLobby}
+              style={{ 
+                display: 'flex', alignItems: 'center', gap: '5px', 
+                backgroundColor: 'var(--primary-color)',
+                color: 'white',
+                border: 'none',
+                padding: '4px 12px', borderRadius: '4px', cursor: 'pointer'
+              }}
+            >
+              <span style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Torna alla Lobby</span>
+            </button>
+          ) : null}
         </div>
 
       </div>

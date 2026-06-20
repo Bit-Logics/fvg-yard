@@ -240,6 +240,8 @@ function init(socketIo) {
       lobby.turnOrder = [];
       lobby.currentTurnIndex = 0;
       lobby.endGameVotes = {};
+      lobby.votes = { friuli: 0, italy: 0, porpetto: 0 };
+      lobby.playerVotes = {};
       
       broadcastState(socket.lobbyId);
       broadcastLobbiesMeta();
