@@ -197,7 +197,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
         style={{ width: '100%', height: '100%' }}
         maxPitch={60}
         maxBounds={FVG_BOUNDS}
-        minZoom={7}
+        minZoom={5}
       >
         <NavigationControl position="bottom-right" />
 
@@ -251,7 +251,7 @@ function MapArea({ mapData, players, myPlayer, isMyTurn, onMove }) {
             ((l.source === myPlayer.location && l.target === node.id) || 
              (l.source === node.id && l.target === myPlayer.location)) && 
             l.type === selectedTransport
-          );
+          ) && !(myPlayer.role === 'detective' && playersList.some(p => p.role === 'detective' && p.id !== myPlayer.id && p.location === node.id));
 
           const types = [];
           if (mapData.links.some(l => (l.source === node.id || l.target === node.id) && l.type === 'car')) types.push('car');

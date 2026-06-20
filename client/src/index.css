@@ -20,13 +20,11 @@
   --route-car: #facc15;
   --route-train: #ef4444;
   --route-plane: #a855f7;
-  
-  --map-bg-brightness: 0.85; /* Abbassa luminosità mappa per far risaltare i pannelli */
 }
 
 [data-theme='dark'] {
   --bg-color: #12151f; /* Antracite / Blu notte profondo */
-  --panel-bg: rgba(26, 30, 43, 0.85); /* Leggermente più chiaro del fondo */
+  --panel-bg: rgba(26, 30, 43, 0.98); /* Meno trasparenza per i pannelli scuri */
   --panel-border: rgba(247, 245, 240, 0.1);
   --text-primary: #f7f5f0; /* L'avorio del tema chiaro */
   --text-secondary: #a0a6b5;
@@ -37,8 +35,6 @@
   
   --node-color: #12151f;
   --node-border: #f7f5f0;
-  
-  --map-bg-brightness: 0.6;
 }
 
 [data-theme='nature'] {
@@ -54,8 +50,6 @@
   
   --node-color: #d3ccc3;
   --node-border: #2b2e2a;
-  
-  --map-bg-brightness: 0.8; /* Mappa leggermente desaturata */
 }
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');

@@ -127,7 +127,7 @@ function init(socketIo) {
       const player = players[socket.id];
       
       // Validate move
-      if (!isValidMove(player.location, targetId, transportType)) {
+      if (!isValidMove(player.location, targetId, transportType, socket.id)) {
         socket.emit('errorMsg', 'Invalid move');
         return;
       }
@@ -198,15 +198,28 @@ function init(socketIo) {
 
 function getRandomLocation() {
   const nodes = mapData.nodes;
-  return nodes[Math.floor(Math.random() * nodes.length)].id;
+  let loc;
+  do {
+    loc = nodes[Math.floor(Math.random() * nodes.length)].id;
+  } while (Object.values(players).some(p => p.location === loc));
+  return loc;
 }
 
-function isValidMove(fromId, toId, transportType) {
-  return mapData.links.some(l => 
+function isValidMove(fromId, toId, transportType, playerId) {
+  const hasLink = mapData.links.some(l => 
     ((l.source === fromId && l.target === toId) || 
      (l.source === toId && l.target === fromId)) && 
     l.type === transportType
   );
+  if (!hasLink) return false;
+
+  const player = players[playerId];
+  if (player && player.role === 'detective') {
+    // Detectives cannot move to a node occupied by another detective
+    const occupiedByDetective = Object.values(players).some(p => p.role === 'detective' && p.id !== playerId && p.location === toId);
+    if (occupiedByDetective) return false;
+  }
+  return true;
 }
 
 function checkWinCondition() {
