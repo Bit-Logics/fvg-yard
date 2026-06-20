@@ -212,19 +212,6 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
               <h3 style={{ margin: '0 0 10px 0', fontSize: '1rem', textAlign: 'center' }}>Vota la Mappa</h3>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button 
-                  onClick={() => handleVote('friuli')}
-                  style={{ 
-                    flex: 1, padding: '10px', borderRadius: '6px', 
-                    border: (votes && votes[myId] === 'friuli') || (!votes || !votes[myId]) ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
-                    backgroundColor: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.2s' 
-                  }}
-                >
-                  <div>Friuli-VG</div>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
-                    {Object.values(votes || {}).filter(v => v !== 'italy' && v !== 'porpetto').length + (playersList.length - Object.values(votes || {}).length)}
-                  </div>
-                </button>
-                <button 
                   onClick={() => handleVote('italy')}
                   style={{ 
                     flex: 1, padding: '10px', borderRadius: '6px', 
@@ -235,6 +222,19 @@ function Lobby({ players, onJoin, onStart, myId, onSetRole, onDraw, isGameInProg
                   <div>Italia Intera</div>
                   <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
                     {Object.values(votes || {}).filter(v => v === 'italy').length}
+                  </div>
+                </button>
+                <button 
+                  onClick={() => handleVote('friuli')}
+                  style={{ 
+                    flex: 1, padding: '10px', borderRadius: '6px', 
+                    border: (votes && votes[myId] === 'friuli') || (!votes || !votes[myId]) ? '2px solid var(--primary-color)' : '1px solid var(--border-light)', 
+                    backgroundColor: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.2s' 
+                  }}
+                >
+                  <div>Friuli-VG</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px', color: 'var(--primary-color)' }}>
+                    {Object.values(votes || {}).filter(v => v !== 'italy' && v !== 'porpetto').length + (playersList.length - Object.values(votes || {}).length)}
                   </div>
                 </button>
                 <button 

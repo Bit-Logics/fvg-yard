@@ -243,17 +243,19 @@ function init(socketIo) {
       // Reset players state but keep them in the lobby
       Object.keys(lobby.players).forEach(pid => {
         const p = lobby.players[pid];
-        p.role = null;
+        p.role = 'detective';
         p.location = null;
         p.history = [];
-        p.tickets = {};
-        p.specialTickets = {};
+        p.tickets = { ...STARTING_TICKETS };
+        p.specialTickets = { double: 0, secret: 0 };
+        p.hasDrawn = false;
+        p.startingLocations = null;
       });
       
       lobby.turnOrder = [];
       lobby.currentTurnIndex = 0;
       lobby.endGameVotes = {};
-      lobby.votes = { friuli: 0, italy: 0, porpetto: 0 };
+      lobby.votes = {};
       lobby.playerVotes = {};
       
       broadcastState(socket.lobbyId);
