@@ -5,7 +5,7 @@ import MapArea from './components/MapArea';
 import GameUI from './components/GameUI';
 import FugitiveLog from './components/FugitiveLog';
 import FugitiveControls from './components/FugitiveControls';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, TreePine } from 'lucide-react';
 import './App.css';
 
 // Socket connection uses relative path so Vite proxy handles it
@@ -68,7 +68,11 @@ function App() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(t => t === 'dark' ? 'light' : 'dark');
+    setTheme(t => {
+      if (t === 'light') return 'dark';
+      if (t === 'dark') return 'nature';
+      return 'light';
+    });
   };
 
   const handleJoin = (data) => {
@@ -95,7 +99,7 @@ function App() {
   return (
     <div className="app-container">
       <button className="theme-toggle" onClick={toggleTheme}>
-        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        {theme === 'light' ? <Sun size={20} /> : theme === 'dark' ? <Moon size={20} /> : <TreePine size={20} />}
       </button>
 
       {errorMsg && (

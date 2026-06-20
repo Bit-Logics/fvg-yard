@@ -41,6 +41,23 @@
   --map-bg-brightness: 0.6;
 }
 
+[data-theme='nature'] {
+  --bg-color: #d3ccc3; /* Argilla / Lino grezzo */
+  --panel-bg: #c5beb4; /* Argilla scura per creare profondità */
+  --panel-border: rgba(43, 46, 42, 0.12); /* Divisori organici */
+  --text-primary: #2b2e2a; /* Lichene bruciato */
+  --text-secondary: #5c615a; /* Salvia opaco */
+  
+  --primary-color: #3f524c; /* Eucalipto scuro */
+  --primary-hover: #2d3b37; /* Foresta profondo */
+  --accent-color: #3f524c;
+  
+  --node-color: #d3ccc3;
+  --node-border: #2b2e2a;
+  
+  --map-bg-brightness: 0.8; /* Mappa leggermente desaturata */
+}
+
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 * {
