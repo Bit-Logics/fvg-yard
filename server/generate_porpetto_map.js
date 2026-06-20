@@ -117,6 +117,20 @@ const links = [
   { source: 'Campo Sportivo', target: 'Palude Fraghis', type: 'train', geometry: [] },
   { source: 'Borgo Pampaluna', target: 'Borgo Castello', type: 'train', geometry: [] },
   
+  // Extra car routes to avoid dead ends
+  { source: 'Villa Pampaluna', target: 'Campi Est', type: 'car', geometry: [] },
+  { source: 'Bar di Corgnolo', target: 'Bivio Corgnolo', type: 'car', geometry: [] },
+  { source: 'Torre', target: 'Bivio Castello', type: 'car', geometry: [] },
+  { source: 'Torre', target: 'Zona Industriale', type: 'car', geometry: [] },
+  { source: 'Villa Pampaluna', target: 'Stazione FS', type: 'car', geometry: [] },
+  { source: 'Bar di Corgnolo', target: 'Fiume Corno', type: 'car', geometry: [] },
+  
+  // Extra train routes to avoid dead ends
+  { source: 'Torre', target: 'Stazione FS', type: 'train', geometry: [] },
+  { source: 'Villa Pampaluna', target: 'Palude Fraghis', type: 'train', geometry: [] },
+  { source: 'Bar di Corgnolo', target: 'Via Provinciale', type: 'train', geometry: [] },
+  { source: 'Chiesa di Corgnolo', target: 'Cimitero', type: 'train', geometry: [] },
+
   // Bici (train) - Percorsi tramite nodi per tappe medie
   { source: 'Fiume Corno', target: 'Via Provinciale', type: 'train', geometry: [] },
   { source: 'Via Provinciale', target: 'Piazza di Corgnolo', type: 'train', geometry: [] },

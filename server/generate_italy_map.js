@@ -53,7 +53,7 @@ const newTowns = [
   'Altamura', 'Gravina in Puglia', 'Cerignola', 'Manfredonia', 'San Severo', 'Lucera',
   'Agnone', 'Milazzo', 'Patti', 'Capo d Orlando', 'Corleone', 'Termini Imerese', 
   'Licata', 'Modica', 'Noto', 'Avola', 'Augusta', 'Lentini', 'Piazza Armerina',
-  'Bosa', 'Macomer', 'Ozieri', 'Tempio Pausania', 'Arzachena', 'San Teodoro', 
+  'Bosa', 'Macomer', 'Ozieri', 'Tempio Pausania', 'Arzachena',
   'Siniscola', 'Tortoli', 'Lanusei', 'Villacidro', 'Sanluri'
 ];
 
@@ -431,8 +431,7 @@ const connections = [
   { source: 'Sassari', target: 'Tempio Pausania', type: 'car' },
   { source: 'Tempio Pausania', target: 'Olbia', type: 'car' },
   { source: 'Olbia', target: 'Arzachena', type: 'car' },
-  { source: 'Olbia', target: 'San Teodoro', type: 'car' },
-  { source: 'San Teodoro', target: 'Siniscola', type: 'car' },
+  { source: 'Olbia', target: 'Siniscola', type: 'car' },
   { source: 'Siniscola', target: 'Nuoro', type: 'car' },
   { source: 'Nuoro', target: 'Tortoli', type: 'car' },
   { source: 'Tortoli', target: 'Lanusei', type: 'car' },
@@ -531,6 +530,7 @@ async function run() {
     const coords = await geocode(t);
     if (coords) {
       mapData.nodes.push({ id: t, ...coords });
+      fs.writeFileSync(MAP_FILE, JSON.stringify(mapData, null, 2));
       console.log(`Added ${t}`);
     }
   }
