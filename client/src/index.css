@@ -25,19 +25,20 @@
 }
 
 [data-theme='dark'] {
-  --bg-color: #0f172a;
-  --panel-bg: rgba(15, 23, 42, 0.7);
-  --panel-border: rgba(255, 255, 255, 0.1);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --bg-color: #12151f; /* Antracite / Blu notte profondo */
+  --panel-bg: rgba(26, 30, 43, 0.85); /* Leggermente più chiaro del fondo */
+  --panel-border: rgba(247, 245, 240, 0.1);
+  --text-primary: #f7f5f0; /* L'avorio del tema chiaro */
+  --text-secondary: #a0a6b5;
   
-  --primary-color: #60a5fa;
-  --accent-color: #a78bfa;
+  --primary-color: #d48c1c; /* Ocra più brillante per staccare sul buio */
+  --primary-hover: #f0a324;
+  --accent-color: #d48c1c;
   
-  --node-color: #1e293b;
-  --node-border: #94a3b8;
+  --node-color: #12151f;
+  --node-border: #f7f5f0;
   
-  --map-bg-brightness: 0.7;
+  --map-bg-brightness: 0.6;
 }
 
 * {
