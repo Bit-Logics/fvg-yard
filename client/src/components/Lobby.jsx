@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
 import './Lobby.css';
 
-const AVAILABLE_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e'];
+const AVAILABLE_COLORS = [
+  '#3b82f6', // Blue
+  '#ef4444', // Red
+  '#10b981', // Emerald
+  '#f59e0b', // Orange
+  '#8b5cf6', // Purple
+  '#ec4899', // Pink
+  '#14b8a6', // Teal
+  '#eab308', // Yellow
+  '#6366f1', // Indigo
+  '#84cc16'  // Lime
+];
 
 const PawnSVG = ({ color, isFugitive }) => (
   <svg width="80" height="100" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 10px 10px rgba(0,0,0,0.4))', transition: 'all 0.3s ease' }}>
